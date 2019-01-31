@@ -119,8 +119,9 @@ bool _while_statements(){
 }
 
 /* 
-if_statement :: "if" condition "then" sequence_of_statement if_aux 
-if_aux  :: "else if" sequence_of_statement | else sequence_of_statement| "end if"
+_if_statement -> "if" _condition "then" _sequence_of_statements _elsif_statements _if_aux
+_elsif_statements -> "elsif" _sequence_of_statements _elsif_statements | $
+_if_aux  ->  "else" _sequence_of_statements | "end if"
 */
 bool _if_statement() {
 	if (debug) printf("in_if_statement \n");
@@ -134,17 +135,66 @@ bool _if_statement() {
 				if(_suquence_of_statement()) {
 					_read_token();
 					//if(_if_aux()) {
-					if(token == END) {
-						_read_token();
-						if(token == IF) {
-							result = true;
-						}
+					if(token == ENDIF) {
+						result = true;
 					}
 				}	
 			}
 		}
 	}
 	if (debug) printf("out_if_statement \n");
+	return result;
+}
+
+/* 
+_if_statement -> "if" _condition "then" _sequence_of_statements _elsif_statements _if_aux "end if"
+_elsif_statements -> "elsif" _condition "then" _sequence_of_statements _elsif_statements | $
+_if_aux  ->  "else" _sequence_of_statements 
+*/
+bool _elsif_statement() {
+	if (debug) printf("in_elsif_statement \n");
+	bool result = false;
+	if(token == ELSIF) {
+		_read_token();
+		if(_condition()) {
+			_read_token();
+			if(token == THEN) {
+				_read_token();
+				if(_suquence_of_statement()) {
+					result = true;
+				}	
+			}
+		}
+	}else if(token == ELSE){
+		follow_token = true;
+		return true;
+	}else if(token == ENDIF){
+		follow_token = true;
+		return true;
+	}
+	if (debug) printf("out_elsif_statement \n");
+	return result;
+}
+
+/* 
+_if_statement -> "if" _condition "then" _sequence_of_statements _elsif_statements _if_aux "end if"
+_elsif_statements -> "elsif" _condition "then" _sequence_of_statements _elsif_statements | $
+_if_aux  ->  "else" _sequence_of_statements | $
+*/
+
+bool _ifaux_statement() {
+	if (debug) printf("in_ifaux_statement \n");
+	bool result = false;
+	if(token == ELSE) {
+		_read_token();
+		if(_suquence_of_statement()) {
+			result = true;
+		}
+	}else if(token == ENDIF){
+		follow_token = true;
+		return true;
+	}
+	if (debug) printf("out_ifaux_statement \n");
 	return result;
 }
 
@@ -277,13 +327,10 @@ bool _assignement_statement() {
 		_read_token();
 		if(token == ASSIGNMENT) {
 			_read_token();
-			if(token == ASSIGNMENT) {
+			if(_simple_expression()) {
 				_read_token();
-				if(_condition) {
-					_read_token();
-					if(token == PVIRG) {
-						result = true;
-					}
+				if(token == PVIRG) {
+					result = true;
 				}
 			}
 			
