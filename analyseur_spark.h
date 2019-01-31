@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+typedef enum {
+ WITH ,
+ PACKAGE ,
+ USE ,
+ PROCEDURE ,
+ IDF ,
+ IS ,
+ END ,
+ LEFT_PARENTHESIS ,
+ STRING ,
+ RIGHT_PARENTHESIS ,
+ PVIRG ,
+ V_BEGIN ,
+ TYPE ,
+ COMMA ,
+ DBPOINT ,
+ EQUALS ,
+ ELSE,
+ NUMERIC ,
+ DECIMAL ,
+ STRING_LITERAL ,
+ IF,
+ ELSIF,
+ ENDIF,
+ THEN,
+ XOR,
+ AND,
+ OR,
+ DIFF,
+ EQ,
+ EXIT,
+ LESS_THAN,
+ GREATER_THAN,
+ LESS_THAN_EQ,
+ GREATER_THAN_EQ,
+ PLUS_SIGN,
+ HYPHEN_MINUS,
+ AMPERSAND,
+ V_NULL,
+ ASSIGNMENT,
+ FOR,
+ WHILE,
+ IN,
+ REVERSE,
+ ENDLOOP,
+ TO,
+ LOOP
+} typetoken;
+
+extern int yylex();
+
+void _read_token() ;
+bool _if_statement();
+bool _if_aux();
+bool _elsif_statement();
+bool _condition();
+bool _relation();
+bool _relation_aux();
+bool _operation_aux();
+bool _op_aux();
+bool _simple_expression();
+bool _simple_expression_pre();
+bool _simple_expression_aux();
+bool _term();
+bool _factor();
+bool _primary();
+bool _suquence_of_statement();
+bool _null_statement();
+bool _assignement_statement();
+bool _exit_statement();
+
+/* boucle part */
+bool _boucle_statements();
+bool _for_statements();
+bool _loop_statements();
+bool _while_statements();
