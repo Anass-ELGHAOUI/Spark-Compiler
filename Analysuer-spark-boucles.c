@@ -47,9 +47,11 @@ bool _use_clause(){
 		if(token == IDF){
 			_read_token();
 			if(token == PVIRG){
-				result = true;		
+				result = true;	
+				//_use_clause();
 			}		
 		}
+	
 	}else if(token == PROCEDURE){
 		follow_token = true;
 		result = true;
@@ -115,7 +117,8 @@ bool _basic_declaration(){
 			if(_type_declaration()){
 				_read_token();
 				if(token == PVIRG){
-					result = true;		
+					result = true;	
+//verification autre declaration	
 				}	
 			}	
 		}
@@ -245,6 +248,7 @@ bool _if_statement() {
 				_read_token();
 				if(_suquence_of_statement()) {
 					_read_token();
+//elseis statement
 					//if(_if_aux()) {
 					if(token == ENDIF) {
 						result = true;
@@ -260,7 +264,7 @@ bool _if_statement() {
 /* 
 _if_statement -> "if" _condition "then" _sequence_of_statements _elsif_statements _if_aux "end if"
 _elsif_statements -> "elsif" _condition "then" _sequence_of_statements _elsif_statements | $
-_if_aux  ->  "else" _sequence_of_statements 
+_if_aux  ->  "else" _sequence_of_statements | $
 */
 bool _elsif_statement() {
 	if (debug) printf("in_elsif_statement \n");
@@ -273,7 +277,7 @@ bool _elsif_statement() {
 				_read_token();
 				if(_suquence_of_statement()) {
 					result = true;
-				}	
+				}	//if(_elseif_statements)
 			}
 		}
 	}else if(token == ELSE){
@@ -313,11 +317,12 @@ bool _ifaux_statement() {
 condition:: _relation relation_aux 
 relation_aux:: {"and" relation}  | {"and" "then" relation} | {"or" relation} | {"or" "then" relation} | 	       {"xor" relation} | epsilon
 */
+/*
 bool _condition() {
 	if (debug) printf("in_condition \n");
 	bool result = false;
 		if(_relation()){
-		/* 7di m3a hada */
+		
 		result = true;
 		if (debug) printf("out_condition \n");
 		return result;
@@ -337,6 +342,46 @@ bool _condition() {
 	}
 	if (debug) printf("out_condition \n");
 	return result;
+}
+*/
+
+// condition :: _relation _condition_aux;
+
+bool _condition(){
+	if(debug) printf("in_condition \n");
+	bool result=false;
+	if(_relation()){
+		_read_token();
+		if(_relation_aux){
+			result=true;
+		}
+	}
+	return result;
+	if(debug) printf("out_condition \n");
+}
+
+// condition_aux :: ("and"["then"]|"or"["then"]|"xor") _relation | $
+// follow condition_aux = follow condition = {"then" , ";" , fist(loop)={loop} }
+bool _condition_aux(){
+	if(debug) printf("in_condition_aux");
+	bool result=false;
+	if(token == AND || token == OR){
+		if(token == THEN){
+			_read_token();	
+		}
+		if(_relation()){
+			result = true;
+		}
+	}else if(token == XOR){
+		if(_relation()){
+			result = true;
+		}
+	}else if(token == THEN | token == PVIRG | token == LOOP ){
+			result = true;
+			follow_token= true;
+	}
+	return result;
+	if(debug) printf("out_condition_aux");
 }
 
 /* 
@@ -363,6 +408,7 @@ bool _relation() {
 /* 
 simple_expression:: [("+" | "-")] _term simple_expression_aux ---> {("+" | "-" | "&") term} | epsilon
 */
+/*
 bool _simple_expression() {
 	if (debug) printf("in_simple_expression \n");
 	bool result = false;
@@ -382,6 +428,40 @@ bool _simple_expression() {
 		}
 	if (debug) printf("out_simple_expression \n");
 	return result;
+}
+*/
+//simple_expression:: _term _simple_expression_aux;
+bool _simple_expression(){
+	if(debug) printf("in_simple_expression \n");
+	bool result=false;
+	if(_term()){
+		_read_token();
+		if(_simple_expression_aux()){
+			_read_token();
+			if(token == PVIRG){
+				result = true;
+			}
+		}
+		
+	}
+	return result;
+	if(debug) printf("out_simple_expression \n");
+}
+//_simple_expression_aux :: ("+"|"-"|"&")_term | $
+bool _simple_expression_aux(){
+	if(debug) printf("in_simple_expression_aux\n");
+	bool result=false;
+	if(token == PLUS_SIGN || token == HYPHEN_MINUS || token == AMPERSAND){
+		_read_token();
+		if(_term()){
+			result = true;
+		}
+	}else if(token == PVIRG){
+		result = true;
+		follow_token = true;
+	}
+	return result;
+	if(debug) printf("out_simple_expression_aux\n");
 }
 /*
 term:: 
@@ -403,7 +483,7 @@ suquence_of_statement:: statement suquence_of_statement | epsilon
 bool _suquence_of_statement() {
 	if (debug) printf("in_suquence_of_statement \n");
 	bool result = false;
-	if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()){
+	if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()){
 		result = true;
 	}
 	if (debug) printf("out_suquence_of_statement \n");
@@ -466,6 +546,80 @@ bool _exit_statement() {
 	}
 	if (debug) printf("out_exit_statement \n");
 	return result;
+}
+/*_case_statement:: "case" IDF "IS" _when_statements _when_others_statment "end Case"  ;
+*/
+
+bool _case_statement(){
+	if(debug) printf("in_case_statement \n");
+	bool result = false;
+	if(token == CASE){
+		_read_token();
+		if(token== IDF){
+			_read_token();
+			if(token== IS){
+				_read_token();
+				if(_when_statement()){
+					_read_token();
+					if(_when_others_statement()){
+						_read_token();
+						if(token== ENDCASE){
+							_read_token();
+							if(token==PVIRG){
+								result = true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if(debug) printf("out_in_case_statment\n");
+	return result;
+}
+
+/* _when_statement :: "when" _term "=>" _sequence_of_statments | $
+*/
+
+bool _when_statement(){
+	if(debug) printf("in_when_statment\n");
+	bool result=false;
+	if(token== WHEN){
+		_read_token();
+		if(_term()){
+			_read_token();
+			if(token== IMPLIQUE){
+				_read_token();
+				if(_suquence_of_statement()){
+					result=true;
+				}
+			}
+		}
+	}else if(token== WHENOTHERS){
+		result=true;
+		follow_token=true;
+	}
+	if(debug) printf("out_when_statement\n");
+	return result;
+}
+// _when_others_statement :: "when others" "=>" _sequence_of_statements _exit_statement
+bool _when_others_statement(){
+	if(debug) printf("in_when_others_statement\n");
+	bool result=false;
+	if(token == WHENOTHERS){
+		_read_token();
+		if(token == IMPLIQUE){
+			_read_token();
+			if(_suquence_of_statement()){
+				_read_token();
+				if(_exit_statement()){
+					result=true;
+				}
+			}
+		}
+	}
+	if(debug) printf("out_when_others_statement\n");
+	return false;
 }
 
  
