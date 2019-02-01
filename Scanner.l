@@ -28,6 +28,7 @@
 "String" 			{if (debug) printf(" String "); return STRING;}
 "Integer" 			{if (debug) printf(" Integer "); return INTEGER;}
 "Float" 			{if (debug) printf(" Float "); return FLOAT;}
+"constant" 			{if (debug) printf(" constant "); return CSTE;}
 "xor"				{if (debug) printf(" xor "); return XOR;}
 "and" 				{if (debug) printf(" and "); return AND;}
 "then" 				{if (debug) printf(" then "); return THEN;}

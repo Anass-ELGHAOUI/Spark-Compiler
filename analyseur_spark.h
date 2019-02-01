@@ -9,6 +9,7 @@ typedef enum {
  ENDCASE ,
  WITH ,
  PACKAGE ,
+ CSTE ,
  USE ,
  PROCEDURE ,
  IDF ,

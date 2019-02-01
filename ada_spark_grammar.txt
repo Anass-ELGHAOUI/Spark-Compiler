@@ -2,7 +2,7 @@ _program -> _use_clause _program_body
 _use_clause -> ("use" | "with")  id _use_clause | $;
 _program_body -> _program_specification "is" _basic_declaration "begin" _sequence_of_statements "end" id;
 _program_specification -> "procedure" id | "function" id "return" id;
-_basic_declaration -> id : _type_declaration ; _basic_declaration | $
+_basic_declaration -> id ":" ["constant"] _type_declaration [":=" _term] ";" _basic_declaration | $
 _sequence_of_statements -> _statement _sequence_of_statements | $
 _statement -> _assignement_statement | _if_statement | _boucle_statement | _switch_statement | _exit_statement | _null_statement
 _assignement_statement -> IDF := _simple_expression ;

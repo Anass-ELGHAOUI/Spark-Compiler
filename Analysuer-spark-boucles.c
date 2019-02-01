@@ -130,7 +130,7 @@ bool _program_specification(){
 }
 
 /* 
- _basic_declaration -> id : _type_declaration ; _basic_declaration | $
+ _basic_declaration -> id ":" ["constant"] _type_declaration [":=" _term] ";" _basic_declaration | $
 */
 bool _basic_declaration(){
 	if (debug) printf("in_basic_declaration_statement \n");
@@ -139,11 +139,20 @@ bool _basic_declaration(){
 		_read_token();
 		if(token == TWOPOINTS){
 			_read_token();
+			if(token == CSTE){
+				_read_token();
+			}
 			if(_type_declaration()){
 				_read_token();
-				if(token == PVIRG){
-					result = true;	
-//verification autre declaration	
+				if(token == ASSIGNMENT){
+					_read_token();
+					if(_term()){
+						_read_token();
+						if(token == PVIRG)
+							result = true;
+					}
+				}else if(token == PVIRG){
+					result = true;		
 				}	
 			}	
 		}
