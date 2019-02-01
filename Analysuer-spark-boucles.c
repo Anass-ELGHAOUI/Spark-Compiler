@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "analyseur_spark.h"
+#include "tabSymb.h"
+#include "error.h"
 #define debug true
 
 typetoken token;
