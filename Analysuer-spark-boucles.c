@@ -9,7 +9,7 @@
 
 typetoken token;
 bool follow_token;
-
+//_program()
 int main() {
 /* test tabSymb and error.c
 	tabSymb elm;
@@ -23,7 +23,7 @@ int main() {
 	err->line =1;
 	addOnTabError(err); */
   _read_token();
-   if (_program()) {
+   if (_simple_expression()) {
    	puts("\n---Valide_Syntax --- \n");
    } else {
     puts("\n---Invalide_Syntax  --- \n");
@@ -465,18 +465,21 @@ bool _simple_expression() {
 	return result;
 }
 */
-//simple_expression:: _term _simple_expression_aux;
+//simple_expression:: _term {_simple_expression_aux}*
 bool _simple_expression(){
 	if(debug) printf("in_simple_expression \n");
 	bool result=false;
+	bool resultSimpleExp=true;
+	
 	if(_term()){
+		
 		_read_token();
-		if(_simple_expression_aux()){
-			_read_token();
-			follow_token=true;
-			if(token == PVIRG){
-				result = true;
-			}
+		while( token == PLUS_SIGN || token == HYPHEN_MINUS || token == AMPERSAND ){
+			resultSimpleExp=_simple_expression_aux(); 
+			if(!follow_token){_read_token();}
+		}
+		if(resultSimpleExp && follow_token){
+			result=true;
 		}
 		
 	}
@@ -484,6 +487,7 @@ bool _simple_expression(){
 	if(debug) printf("out_simple_expression \n");
 }
 //_simple_expression_aux :: ("+"|"-"|"&")_term | $
+//follows simple_expression_aux = follows simple_express ={";"}
 bool _simple_expression_aux(){
 	if(debug) printf("in_simple_expression_aux\n");
 	bool result=false;
@@ -583,20 +587,21 @@ bool _exit_statement() {
 	if (debug) printf("out_exit_statement \n");
 	return result;
 }
-/*_case_statement:: "case" IDF "IS" _when_statements _when_others_statment "end Case"  ;
+/*_case_statement:: "case" IDF "IS" {_when_statements}* _when_others_statment "end Case"  ;
 */
 
 bool _case_statement(){
 	if(debug) printf("in_case_statement \n");
 	bool result = false;
+	bool resultWhen=true;
 	if(token == CASE){
 		_read_token();
 		if(token== IDF){
 			_read_token();
 			if(token== IS){
 				_read_token();
-				if(_when_statement()){
-					_read_token();
+				while(token == WHEN){ resultWhen=_when_statement();	_read_token();}
+				if(resultWhen){
 					if(_when_others_statement()){
 						_read_token();
 						if(token== ENDCASE){
@@ -655,7 +660,7 @@ bool _when_others_statement(){
 		}
 	}
 	if(debug) printf("out_when_others_statement\n");
-	return false;
+	return result;
 }
 
  
