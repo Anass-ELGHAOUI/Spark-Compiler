@@ -2,6 +2,11 @@
 #include <stdbool.h>
 
 typedef enum {
+ CASE ,
+ WHEN ,
+ WHENOTHERS ,
+ IMPLIQUE ,
+ ENDCASE ,
  WITH ,
  PACKAGE ,
  USE ,
@@ -74,6 +79,9 @@ bool _suquence_of_statement();
 bool _null_statement();
 bool _assignement_statement();
 bool _exit_statement();
+bool _case_statement();
+bool _when_statement();
+bool _when_others_statement();
 
 bool _boucle_statements();
 bool _for_statements();

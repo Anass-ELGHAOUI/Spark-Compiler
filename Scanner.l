@@ -12,6 +12,11 @@
 %%
 "procedure" 			{if (debug) printf(" proc(%s)",yytext); return PROCEDURE;}
 "is" 				{if (debug) printf(" IS "); return IS;}
+"case"				{if (debug) printf("CASE"); return CASE;}
+"when others"			{if(debug) printf("WHENOTHERS");return WHENOTHERS; }
+"when"				{if(debug) printf("WHEN"); return WHEN; }
+"=>"				{if(debug) printf("IMPLIQUE"); return IMPLIQUE;}
+"end case"			{if(debug) printf("END CASE"); return ENDCASE;}
 "end if"			{if (debug) printf(" ENDIF "); return ENDIF;}
 "end loop"			{if (debug) printf(" ENDLOOP "); return ENDLOOP;}
 "in" 				{if (debug) printf("IN "); return IN;}
