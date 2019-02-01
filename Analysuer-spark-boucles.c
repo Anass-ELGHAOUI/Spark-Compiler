@@ -49,7 +49,7 @@ bool _program(){
 bool _use_clause(){
 	if (debug) printf("in_use_clause_statement \n");
 	bool result = false;
-	if(token == USE){
+	if(token == USE || token == WITH){
 		_read_token();
 		if(token == IDF){
 			_read_token();
