@@ -84,19 +84,20 @@ bool _use_clause(){
 bool _body_program(){
 	if (debug) printf("in_body_program_statement \n");
 	bool result = false;
+	bool resulttmp = true;
 	if(_program_specification()){
 		_read_token();
 		if(token == IS){
 			_read_token();
 			while(token != V_BEGIN){
-				result = _basic_declaration();
+				resulttmp = _basic_declaration();
 				_read_token();
-				if(!result) break;	
+				if(!resulttmp) break;	
 			}
-			if(result){
+			if(resulttmp){
 				if(token == V_BEGIN){
 					_read_token();
-					if(_suquence_of_statement() ){
+					if(_suquence_of_statement()){
 						_read_token();
 						if(token == END){
 							_read_token();
