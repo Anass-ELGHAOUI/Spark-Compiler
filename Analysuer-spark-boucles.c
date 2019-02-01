@@ -23,7 +23,7 @@ int main() {
 	err->line =1;
 	addOnTabError(err); */
   _read_token();
-   if (_simple_expression()) {
+   if (_program()) {
    	puts("\n---Valide_Syntax --- \n");
    } else {
     puts("\n---Invalide_Syntax  --- \n");
@@ -391,8 +391,8 @@ bool _condition(){
 			result=true;
 		}
 	}
-	return result;
 	if(debug) printf("out_condition \n");
+	return result;
 }
 
 // condition_aux :: ("and"["then"]|"or"["then"]|"xor") _relation | $
@@ -415,8 +415,8 @@ bool _condition_aux(){
 			result = true;
 			follow_token= true;
 	}
-	return result;
 	if(debug) printf("out_condition_aux");
+	return result;
 }
 
 /* 
@@ -474,17 +474,18 @@ bool _simple_expression(){
 	if(_term()){
 		
 		_read_token();
-		while( token == PLUS_SIGN || token == HYPHEN_MINUS || token == AMPERSAND ){
+		while( token != PVIRG){
 			resultSimpleExp=_simple_expression_aux(); 
-			if(!follow_token){_read_token();}
+			_read_token();
+			if(!resultSimpleExp) break;
 		}
-		if(resultSimpleExp && follow_token){
+		if(resultSimpleExp){
 			result=true;
 		}
 		
 	}
-	return result;
 	if(debug) printf("out_simple_expression \n");
+	return result;
 }
 //_simple_expression_aux :: ("+"|"-"|"&")_term | $
 //follows simple_expression_aux = follows simple_express ={";"}
@@ -500,8 +501,8 @@ bool _simple_expression_aux(){
 		result = true;
 		follow_token = true;
 	}
-	return result;
 	if(debug) printf("out_simple_expression_aux\n");
+	return result;
 }
 /*
 term:: 
