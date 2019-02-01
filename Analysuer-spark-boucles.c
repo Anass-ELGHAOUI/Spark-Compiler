@@ -438,6 +438,7 @@ bool _simple_expression(){
 		_read_token();
 		if(_simple_expression_aux()){
 			_read_token();
+			follow_token=true;
 			if(token == PVIRG){
 				result = true;
 			}
