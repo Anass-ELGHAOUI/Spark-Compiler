@@ -9,7 +9,7 @@ bool follow_token;
 
 int main() {
   _read_token();
-   if (_boucle_statements()) {
+   if (_program()) {
    	puts("\n---Valide_Syntax --- \n");
    } else {
     puts("\n---Invalide_Syntax  --- \n");
@@ -24,6 +24,117 @@ void _read_token(){
 	else {
 		token=(typetoken)yylex();
 	}
+}
+//_program -> _use_clause _program_body
+bool _program(){
+	if (debug) printf("in_program_statement \n");
+	bool result = false;
+	if(_use_clause()){
+		_read_token();
+		if(_body_program()){
+			result = true;		
+		}
+	}
+	if (debug) printf("out_program_statement \n");
+	return result;
+}
+//_use_clause -> ("use" | "with")  id _use_clause | $;
+bool _use_clause(){
+	if (debug) printf("in_use_clause_statement \n");
+	bool result = false;
+	if(token == USE){
+		_read_token();
+		if(token == IDF){
+			_read_token();
+			if(token == PVIRG){
+				result = true;		
+			}		
+		}
+	}else if(token == PROCEDURE){
+		follow_token = true;
+		result = true;
+	}
+	if (debug) printf("out_use_clause_statement \n");
+	return result;
+}
+//_program_body -> _program_specification "is" _basic_declaration "begin" _sequence_of_statements "end" id;
+bool _body_program(){
+	if (debug) printf("in_body_program_statement \n");
+	bool result = false;
+	if(_program_specification()){
+		_read_token();
+		if(token == IS){
+			_read_token();
+			if(_basic_declaration()){
+				_read_token();
+				if(token == V_BEGIN){
+					_read_token();
+					if(_suquence_of_statement() ){
+						_read_token();
+						if(token == END){
+							_read_token();
+							if(token == IDF){
+								_read_token();
+								if(token == PVIRG){
+									result = true;		
+								}	
+							}		
+						}
+					}	
+				}
+			}		
+		}
+	}
+	if (debug) printf("out_body_program_statement \n");
+	return result;
+}
+//_program_specification -> "procedure" id | "function" id "return" id;
+bool _program_specification(){
+	if (debug) printf("in_program_specification_statement \n");
+	bool result = false;
+	if(token == PROCEDURE){
+		_read_token();
+		if(token == IDF){
+			result = true;		
+		}
+	}
+	if (debug) printf("out_program_specification_statement \n");
+	return result;
+}
+
+/* 
+ _basic_declaration -> id : _type_declaration ; _basic_declaration | $
+*/
+bool _basic_declaration(){
+	if (debug) printf("in_basic_declaration_statement \n");
+	bool result = false;
+	if(token == IDF){
+		_read_token();
+		if(token == TWOPOINTS){
+			_read_token();
+			if(_type_declaration()){
+				_read_token();
+				if(token == PVIRG){
+					result = true;		
+				}	
+			}	
+		}
+	}else if(token == V_BEGIN){
+		follow_token = true;
+		result = true;
+	}
+	if (debug) printf("out_basic_declaration_statement \n");
+	return result;
+}
+
+bool _type_declaration(){
+	if (debug) printf("in_type_declaration_statement \n");
+	bool result = false;
+	if(token == STRING || token == INTEGER || token == FLOAT){
+		result = true;
+	}
+	if (debug) printf("out_type_declaration_statement \n");
+	return result;
 }
 
 /*
@@ -167,10 +278,10 @@ bool _elsif_statement() {
 		}
 	}else if(token == ELSE){
 		follow_token = true;
-		return true;
+		result = true;
 	}else if(token == ENDIF){
 		follow_token = true;
-		return true;
+		result = true;
 	}
 	if (debug) printf("out_elsif_statement \n");
 	return result;
@@ -192,7 +303,7 @@ bool _ifaux_statement() {
 		}
 	}else if(token == ENDIF){
 		follow_token = true;
-		return true;
+		result =  true;
 	}
 	if (debug) printf("out_ifaux_statement \n");
 	return result;
@@ -292,7 +403,7 @@ suquence_of_statement:: statement suquence_of_statement | epsilon
 bool _suquence_of_statement() {
 	if (debug) printf("in_suquence_of_statement \n");
 	bool result = false;
-	if(_null_statement() || _assignement_statement() || _exit_statement()){
+	if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()){
 		result = true;
 	}
 	if (debug) printf("out_suquence_of_statement \n");

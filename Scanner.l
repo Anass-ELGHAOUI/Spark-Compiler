@@ -10,16 +10,19 @@
 %option noyywrap
 
 %%
-"procedure" 		{if (debug) printf(" proc(%s)",yytext); return PROCEDURE;}
+"procedure" 			{if (debug) printf(" proc(%s)",yytext); return PROCEDURE;}
 "is" 				{if (debug) printf(" IS "); return IS;}
 "end if"			{if (debug) printf(" ENDIF "); return ENDIF;}
 "end loop"			{if (debug) printf(" ENDLOOP "); return ENDLOOP;}
 "in" 				{if (debug) printf("IN "); return IN;}
+"begin" 			{if (debug) printf(" BEGIN "); return V_BEGIN;}
 "end" 				{if (debug) printf(" END "); return END;}
 "package" 			{if (debug) printf(" package (%s)",yytext); return PACKAGE;}
 "with" 				{if (debug) printf(" with "); return WITH;}
 "use" 				{if (debug) printf(" use "); return USE;}
-"String" 			{if (debug) printf(" chaine "); return STRING;}
+"String" 			{if (debug) printf(" String "); return STRING;}
+"Integer" 			{if (debug) printf(" Integer "); return INTEGER;}
+"Float" 			{if (debug) printf(" Float "); return FLOAT;}
 "xor"				{if (debug) printf(" xor "); return XOR;}
 "and" 				{if (debug) printf(" and "); return AND;}
 "then" 				{if (debug) printf(" then "); return THEN;}
@@ -49,9 +52,10 @@
 "&"			     	{if (debug) printf(" ampersand "); return AMPERSAND;}
 "exit" 				{if (debug) printf(" exit "); return EXIT;}
 ";" 				{if (debug) printf(" PVIRG "); return PVIRG;}
+":" 				{if (debug) printf(" TWOPOINTS "); return TWOPOINTS;}
 "(" 				{if (debug) printf(" left_parenthesis "); return LEFT_PARENTHESIS;}
 ")" 				{if (debug) printf(" right_parenthesis "); return RIGHT_PARENTHESIS;}
-[\"][^\n][\"]			{if (debug) printf(" string_literal "); return STRING_LITERAL;}  
+[\"][^\n]*[\"]			{if (debug) printf(" string_literal "); return STRING_LITERAL;}  
 [_a-zA-Z][_a-zA-Z0-9]*  	{if (debug) printf(" IDF(%s) ",yytext); return IDF;}
 [ \t\n]+ 
 .				    printf("ERR_LEX( %s )\n", yytext);

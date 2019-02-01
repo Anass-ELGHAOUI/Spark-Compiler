@@ -11,6 +11,8 @@ typedef enum {
  END ,
  LEFT_PARENTHESIS ,
  STRING ,
+ INTEGER,
+ FLOAT,
  RIGHT_PARENTHESIS ,
  PVIRG ,
  V_BEGIN ,
@@ -30,6 +32,7 @@ typedef enum {
  AND,
  OR,
  DIFF,
+ TWOPOINTS,
  EQ,
  EXIT,
  LESS_THAN,
@@ -72,8 +75,13 @@ bool _null_statement();
 bool _assignement_statement();
 bool _exit_statement();
 
-/* boucle part */
 bool _boucle_statements();
 bool _for_statements();
 bool _loop_statements();
 bool _while_statements();
+bool _program();
+bool _use_clause();
+bool _body_program();
+bool _program_specification();
+bool _basic_declaration();
+bool _type_declaration();
