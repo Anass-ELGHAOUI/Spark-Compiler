@@ -35,6 +35,6 @@ _when_statement -> "when" _condition ";" <br>
   flex -l Scanner.l <br>
   gcc -c lex.yy.c <br>
   repete gcc -c for all c files <br>
-  gcc -o test lex.yy.o (all .o files) <br>
+  gcc -o test lex.yy.o (all .o files) -lfl<br>
   ./test <br>
 </p>
