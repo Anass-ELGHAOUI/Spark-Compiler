@@ -3,20 +3,34 @@
 #include <string.h>
 #include <stdlib.h>
 #include "analyseur_spark.h"
-//#include "tabSymb.h"
 #include "error.h"
+#include "tabSymb.h"
 #define debug true
 
 typetoken token;
 bool follow_token;
 //_program()
 int main() {
+/* test tabSymb and error.c
+	tabSymb elm;
+	elm.type = INTEGER;
+	strcpy(elm.name,"x");
+	elm.adresse = 1;
+	addOnTabSymb(elm);
+
+	error* err = (error*)malloc(sizeof(error));
+	strcpy(err->msgError,"test error");
+	err->line =1;
+	addOnTabError(err); */
   _read_token();
    if (_simple_expression()) {
    	puts("\n---Valide_Syntax --- \n");
    } else {
     puts("\n---Invalide_Syntax  --- \n");
    }
+/*
+	showAllSymbols();
+	showErrors(); */
   return 0;
 }
 
@@ -31,7 +45,7 @@ void _read_token(){
 //_program -> _use_clause _program_body
 bool _program(){
 	if (debug) printf("in_program_statement \n");
-	bool result = false;
+	bool result = true;
 	while(token != PROCEDURE){
 		result = _use_clause();
 		_read_token();
@@ -49,7 +63,7 @@ bool _program(){
 bool _use_clause(){
 	if (debug) printf("in_use_clause_statement \n");
 	bool result = false;
-	if(token == USE){
+	if(token == USE || token == WITH){
 		_read_token();
 		if(token == IDF){
 			_read_token();
@@ -116,7 +130,7 @@ bool _program_specification(){
 }
 
 /* 
- _basic_declaration -> id : _type_declaration ; _basic_declaration | $
+ _basic_declaration -> id ":" ["constant"] _type_declaration [":=" _term] ";" _basic_declaration | $
 */
 bool _basic_declaration(){
 	if (debug) printf("in_basic_declaration_statement \n");
@@ -125,11 +139,20 @@ bool _basic_declaration(){
 		_read_token();
 		if(token == TWOPOINTS){
 			_read_token();
+			if(token == CSTE){
+				_read_token();
+			}
 			if(_type_declaration()){
 				_read_token();
-				if(token == PVIRG){
-					result = true;	
-//verification autre declaration	
+				if(token == ASSIGNMENT){
+					_read_token();
+					if(_term()){
+						_read_token();
+						if(token == PVIRG)
+							result = true;
+					}
+				}else if(token == PVIRG){
+					result = true;		
 				}	
 			}	
 		}
