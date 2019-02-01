@@ -394,22 +394,22 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_accept[164] =
     {   0,
         0,    0,   57,   55,   54,   54,   55,   46,   50,   51,
-       43,   42,   45,   55,   55,   33,   49,   48,   38,   37,
-       39,   53,   53,   53,   53,   53,   53,   53,   53,   53,
+        8,   43,   45,   55,   55,   34,   49,   48,   39,   38,
+       40,   53,   53,   53,   53,   53,   53,   53,   53,   53,
        53,   53,   53,   53,   53,   53,   53,   53,   53,   53,
-       54,    0,   52,   33,    0,   44,   35,   34,   36,   41,
-        6,   40,   53,   53,   53,   53,   53,   53,   53,   53,
-       53,   53,   53,   53,   29,   10,    2,   53,   53,   27,
-       53,   53,   53,   53,   53,   53,   53,   53,   32,   34,
-       53,   53,   53,   21,   53,   53,   53,   53,   12,   53,
-       23,   53,   53,   53,   53,   53,   53,   15,   53,   53,
+       54,    0,   52,   34,    0,   44,   36,   35,   37,   42,
+        6,   41,   53,   53,   53,   53,   53,   53,   53,   53,
+       53,   53,   53,   53,   30,   11,    2,   53,   53,   28,
+       53,   53,   53,   53,   53,   53,   53,   53,   33,   35,
+       53,   53,   53,   22,   53,   53,   53,   53,   13,   53,
+       24,   53,   53,   53,   53,   53,   53,   16,   53,   53,
 
-       53,   20,   53,   53,   53,   53,    3,   53,   28,   53,
-        0,   47,   25,   31,   53,   53,   53,   22,    5,   53,
-       14,   18,   53,   53,   11,   53,   30,    0,    0,    0,
-       53,   53,   53,    0,   24,   53,   16,   53,    0,    8,
-        0,   53,   53,   53,    0,   17,   53,    0,    0,   13,
-       53,   26,    0,   19,    7,    9,   53,    0,    1,    0,
+       53,   21,   53,   53,   53,   53,    3,   53,   29,   53,
+        0,   47,   26,   32,   53,   53,   53,   23,    5,   53,
+       15,   19,   53,   53,   12,   53,   31,    0,    0,    0,
+       53,   53,   53,    0,   25,   53,   17,   53,    0,    9,
+        0,   53,   53,   53,    0,   18,   53,    0,    0,   14,
+       53,   27,    0,   20,    7,   10,   53,    0,    1,    0,
         0,    4,    0
     } ;
 
@@ -562,7 +562,7 @@ static yyconst flex_int16_t yy_chk[234] =
 static yyconst flex_int32_t yy_rule_can_match_eol[57] =
     {   0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
@@ -917,183 +917,183 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 20 "Scanner.l"
-{if (debug) printf(" ENDIF "); return ENDIF;}
+{if (debug) printf("plus_sign "); return PLUS_SIGN;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 21 "Scanner.l"
-{if (debug) printf(" ENDLOOP "); return ENDLOOP;}
+{if (debug) printf(" ENDIF "); return ENDIF;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 22 "Scanner.l"
-{if (debug) printf("IN "); return IN;}
+{if (debug) printf(" ENDLOOP "); return ENDLOOP;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 23 "Scanner.l"
-{if (debug) printf(" BEGIN "); return V_BEGIN;}
+{if (debug) printf("IN "); return IN;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 24 "Scanner.l"
-{if (debug) printf(" END "); return END;}
+{if (debug) printf(" BEGIN "); return V_BEGIN;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 25 "Scanner.l"
-{if (debug) printf(" package (%s)",yytext); return PACKAGE;}
+{if (debug) printf(" END "); return END;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 26 "Scanner.l"
-{if (debug) printf(" with "); return WITH;}
+{if (debug) printf(" package (%s)",yytext); return PACKAGE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 27 "Scanner.l"
-{if (debug) printf(" use "); return USE;}
+{if (debug) printf(" with "); return WITH;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 28 "Scanner.l"
-{if (debug) printf(" String "); return STRING;}
+{if (debug) printf(" use "); return USE;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 29 "Scanner.l"
-{if (debug) printf(" Integer "); return INTEGER;}
+{if (debug) printf(" String "); return STRING;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 30 "Scanner.l"
-{if (debug) printf(" Float "); return FLOAT;}
+{if (debug) printf(" Integer "); return INTEGER;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 31 "Scanner.l"
-{if (debug) printf(" constant "); return CSTE;}
+{if (debug) printf(" Float "); return FLOAT;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 32 "Scanner.l"
-{if (debug) printf(" xor "); return XOR;}
+{if (debug) printf(" constant "); return CSTE;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 33 "Scanner.l"
-{if (debug) printf(" and "); return AND;}
+{if (debug) printf(" xor "); return XOR;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 34 "Scanner.l"
-{if (debug) printf(" then "); return THEN;}
+{if (debug) printf(" and "); return AND;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 35 "Scanner.l"
-{if (debug) printf(" for "); return FOR;}
+{if (debug) printf(" then "); return THEN;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 36 "Scanner.l"
-{if (debug) printf(" while "); return WHILE;}
+{if (debug) printf(" for "); return FOR;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 37 "Scanner.l"
-{if (debug) printf(" loop "); return LOOP;}
+{if (debug) printf(" while "); return WHILE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 38 "Scanner.l"
-{if (debug) printf(" reverse "); return REVERSE;}
+{if (debug) printf(" loop "); return LOOP;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 39 "Scanner.l"
-{if (debug) printf(" or "); return OR;}
+{if (debug) printf(" reverse "); return REVERSE;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 40 "Scanner.l"
-{if (debug) printf(" else "); return ELSE;}
+{if (debug) printf(" or "); return OR;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 41 "Scanner.l"
-{if (debug) printf(" if "); return IF;}
+{if (debug) printf(" else "); return ELSE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 42 "Scanner.l"
-{if (debug) printf(" elsif "); return ELSIF;}
+{if (debug) printf(" if "); return IF;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 43 "Scanner.l"
-{if (debug) printf(" null "); return V_NULL;}
+{if (debug) printf(" elsif "); return ELSIF;}
 	YY_BREAK
 case 32:
-/* rule 32 can match eol */
 YY_RULE_SETUP
 #line 44 "Scanner.l"
-{if (debug) printf(" Comment ");}
+{if (debug) printf(" null "); return V_NULL;}
 	YY_BREAK
 case 33:
+/* rule 33 can match eol */
 YY_RULE_SETUP
 #line 45 "Scanner.l"
-{if (debug) printf("NUMERIC(%s) ",yytext); return NUMERIC;}
+{if (debug) printf(" Comment ");}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 46 "Scanner.l"
-{if (debug) printf("DECIMAL(%s) ",yytext); return DECIMAL;}
+{if (debug) printf("NUMERIC(%s) ",yytext); return NUMERIC;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 47 "Scanner.l"
-{if (debug) printf(" diff "); return DIFF;}
+{if (debug) printf("DECIMAL(%s) ",yytext); return DECIMAL;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 48 "Scanner.l"
-{if (debug) printf(" assignment "); return ASSIGNMENT;}
+{if (debug) printf(" diff "); return DIFF;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 49 "Scanner.l"
-{if (debug) printf(" equals  "); return EQ;}
+{if (debug) printf(" assignment "); return ASSIGNMENT;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 50 "Scanner.l"
-{if (debug) printf("less_than "); return LESS_THAN;}
+{if (debug) printf(" equals  "); return EQ;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 51 "Scanner.l"
-{if (debug) printf("greater_than "); return GREATER_THAN;}
+{if (debug) printf("less_than "); return LESS_THAN;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 52 "Scanner.l"
-{if (debug) printf("greater_than_eq "); return GREATER_THAN_EQ;}
+{if (debug) printf("greater_than "); return GREATER_THAN;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 53 "Scanner.l"
-{if (debug) printf("less_than_eq "); return LESS_THAN_EQ;}
+{if (debug) printf("greater_than_eq "); return GREATER_THAN_EQ;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 54 "Scanner.l"
-{if (debug) printf("comma "); return COMMA;}
+{if (debug) printf("less_than_eq "); return LESS_THAN_EQ;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 55 "Scanner.l"
-{if (debug) printf("plus_sign "); return PLUS_SIGN;}
+{if (debug) printf("comma "); return COMMA;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP

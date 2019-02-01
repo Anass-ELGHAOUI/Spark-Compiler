@@ -17,6 +17,7 @@
 "when"				{if(debug) printf("WHEN"); return WHEN; }
 "=>"				{if(debug) printf("IMPLIQUE"); return IMPLIQUE;}
 "end case"			{if(debug) printf("END CASE"); return ENDCASE;}
+"+" 				{if (debug) printf("plus_sign "); return PLUS_SIGN;}
 "end if"			{if (debug) printf(" ENDIF "); return ENDIF;}
 "end loop"			{if (debug) printf(" ENDLOOP "); return ENDLOOP;}
 "in" 				{if (debug) printf("IN "); return IN;}
@@ -52,7 +53,6 @@
 ">="				{if (debug) printf("greater_than_eq "); return GREATER_THAN_EQ;}
 "<="				{if (debug) printf("less_than_eq "); return LESS_THAN_EQ;}
 "," 				{if (debug) printf("comma "); return COMMA;}
-"+" 				{if (debug) printf("plus_sign "); return PLUS_SIGN;}
 ".." 				{if (debug) printf("to "); return TO;}
 "-" 				{if (debug) printf("hyphen_minus "); return HYPHEN_MINUS;}
 "&"			     	{if (debug) printf(" ampersand "); return AMPERSAND;}
