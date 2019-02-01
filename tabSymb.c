@@ -9,6 +9,8 @@
 
 static tabSymb TS[NBS];
 
+static valueSymb VALUE[NBS];
+
 static int NBVAR = 0;
 
 void addOnTabSymb(tabSymb element){
