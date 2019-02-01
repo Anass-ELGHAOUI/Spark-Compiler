@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "analyseur_spark.h"
-#include "tabSymb.h"
+//#include "tabSymb.h"
 #include "error.h"
 #define debug true
 
@@ -441,18 +441,14 @@ bool _simple_expression() {
 	return result;
 }
 */
-//simple_expression:: _term _simple_expression_aux;
+//simple_expression:: _term _simple_expression_aux
 bool _simple_expression(){
 	if(debug) printf("in_simple_expression \n");
 	bool result=false;
 	if(_term()){
 		_read_token();
 		if(_simple_expression_aux()){
-			_read_token();
-			follow_token=true;
-			if(token == PVIRG){
-				result = true;
-			}
+			result=true;
 		}
 		
 	}
@@ -460,6 +456,7 @@ bool _simple_expression(){
 	if(debug) printf("out_simple_expression \n");
 }
 //_simple_expression_aux :: ("+"|"-"|"&")_term | $
+//follows simple_expression_aux = follows simple_express ={";"}
 bool _simple_expression_aux(){
 	if(debug) printf("in_simple_expression_aux\n");
 	bool result=false;
