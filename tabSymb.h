@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include "analyseur_spark.h"
 
 typedef struct tabSymb{
 	char name[30];
@@ -18,6 +14,6 @@ typedef union valueSymb{
 }valueSymb;
 
 
-extern void addOnTabSymb(tabSymb element);
+extern bool addOnTabSymb(tabSymb element);
 extern bool isInTabSymb(char* nom);
 extern void showAllSymbols();

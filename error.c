@@ -8,7 +8,10 @@
 
 error* errorsList = NULL;
 
+static int NBERRORS = 0;
+
 error* addOnTabError(error* element){
+	if(debug) printf("_in_add_On_Tab_Error_\n");
 	error* new = (error*)malloc(sizeof(error));
 	new->line = element->line;
 	strcpy(new->msgError, element->msgError);
@@ -23,15 +26,19 @@ error* addOnTabError(error* element){
 		}
 		tmp->next = new;
 	}
+	NBERRORS++;
+	if(debug) printf("_out_add_On_Tab_Error_\n");
 	return errorsList;
 }
 
 void showErrors(){
+	if(debug) printf("_in_show_Errors_\n");
 	error* tmp = errorsList;
 	int i=1;
 	while(tmp != NULL){
 		printf("error %d in line %d : %s\n",i++,tmp->line,tmp->msgError); 
 		tmp = tmp->next;
 	}
+	if(debug) printf("_out_show_Errors_\n");
 }
 

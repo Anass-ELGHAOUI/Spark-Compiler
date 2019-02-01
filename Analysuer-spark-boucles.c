@@ -3,20 +3,34 @@
 #include <string.h>
 #include <stdlib.h>
 #include "analyseur_spark.h"
-#include "tabSymb.h"
 #include "error.h"
+#include "tabSymb.h"
 #define debug true
 
 typetoken token;
 bool follow_token;
 
 int main() {
+/* test tabSymb and error.c
+	tabSymb elm;
+	elm.type = INTEGER;
+	strcpy(elm.name,"x");
+	elm.adresse = 1;
+	addOnTabSymb(elm);
+
+	error* err = (error*)malloc(sizeof(error));
+	strcpy(err->msgError,"test error");
+	err->line =1;
+	addOnTabError(err); */
   _read_token();
    if (_program()) {
    	puts("\n---Valide_Syntax --- \n");
    } else {
     puts("\n---Invalide_Syntax  --- \n");
    }
+/*
+	showAllSymbols();
+	showErrors(); */
   return 0;
 }
 
@@ -31,7 +45,7 @@ void _read_token(){
 //_program -> _use_clause _program_body
 bool _program(){
 	if (debug) printf("in_program_statement \n");
-	bool result = false;
+	bool result = true;
 	while(token != PROCEDURE){
 		result = _use_clause();
 		_read_token();
