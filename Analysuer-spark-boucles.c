@@ -29,8 +29,12 @@ void _read_token(){
 bool _program(){
 	if (debug) printf("in_program_statement \n");
 	bool result = false;
-	if(_use_clause()){
+	while(token != PROCEDURE){
+		result = _use_clause();
 		_read_token();
+		if(!result) break;
+	}
+	if(result){
 		if(_body_program()){
 			result = true;		
 		}
@@ -67,8 +71,12 @@ bool _body_program(){
 		_read_token();
 		if(token == IS){
 			_read_token();
-			if(_basic_declaration()){
+			while(token != V_BEGIN){
+				result = _basic_declaration();
 				_read_token();
+				if(!result) break;	
+			}
+			if(result){
 				if(token == V_BEGIN){
 					_read_token();
 					if(_suquence_of_statement() ){
