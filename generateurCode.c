@@ -60,7 +60,7 @@ char* diplayOnCode(Pcode code){
 			case ANDN:return "ANDN";
 			case HLT:return "HLT";
 			case BZE:return "BZE";
-			case BZN:return "BZN";
+			case BRN:return "BRN";
 			case INT:return "INT";
 			case LEQ:return "LEQ";
 			case GEQ:return "GEQ";
@@ -84,7 +84,7 @@ char* diplayOnCode(Pcode code){
 void displayAllPcode(){
 	int i;
 	for(i=0;i<ip+1;i++){
-		printf("\t%s",diplayOnCode(tabCode[i].inst));
+		printf("%d\t%s",i,diplayOnCode(tabCode[i].inst));
 
 		switch(tabCode[i].type){
 			case INTEGER : printf("\t%d",tabCode[i].paramI.intValue); break;	

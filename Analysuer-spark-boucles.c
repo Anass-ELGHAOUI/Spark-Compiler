@@ -110,6 +110,7 @@ bool _body_program(){
 					isInBodyPart = true;
 					_read_token();
 					if(_suquence_of_statement()){
+						_read_token();
 						if(token == END){
 							isInBodyPart = false;
 							_read_token();
@@ -363,7 +364,7 @@ bool _if_statement() {
 */
 //_if_statement -> "if" _condition "then" _sequence_of_statment [_elsif_statment]* [_else_statement] "end if" ";"
 bool _if_statement(){
-	printf("in_if_statement");
+	if (debug) printf("in_if_statement");
 	bool result = false;
 	bool resultTmp = true;
 	if(token == IF){
@@ -378,6 +379,8 @@ bool _if_statement(){
 				if(_suquence_of_statement()){
 					_read_token();
 					//generer
+					genererMiInst(BRN);
+					int sauvEndIf=getCurrentIndexPile();
 					tabCode[sauv].type=INTEGER;
 					tabCode[sauv].paramI.intValue=getCurrentIndexPile()+1;
 
@@ -385,15 +388,27 @@ bool _if_statement(){
 					if(token == ELSE  && resultTmp ){resultTmp=_ifaux_statement(); _read_token();}
 					if(token == ENDIF && resultTmp ){
 						_read_token();
+							
 						if(token == PVIRG){
+							//generer
+							int i=sauvEndIf;
+							for(;i<getCurrentIndexPile()+1;i++){
+								if(tabCode[i].inst==BRN){
+									tabCode[i].type=INTEGER;
+									tabCode[i].paramI.intValue=getCurrentIndexPile()+1;
+								}
+							}
+							
 							result=true;
+
 						}
 					}
 				}
 			}
 		}
 	}
-	printf("out_if_statement");
+	
+	if (debug)printf("out_if_statement");
 	return result;
 }
 
@@ -418,8 +433,10 @@ bool _elsif_statement() {
 				if(_suquence_of_statement()) {
 					_read_token();
 					//generer
+					genererMiInst(BRN);
 					tabCode[sauv].type=INTEGER;
 					tabCode[sauv].paramI.intValue=getCurrentIndexPile()+1;
+					
 					if(token == ELSE || token == ENDIF || token == ELSIF){
 						follow_token = true;
 						result = true;
@@ -709,8 +726,9 @@ bool _suquence_of_statement() {
 		_read_token();
 		if(!resulttmp) break;
 	}
-	if(resulttmp){
-
+	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != EXIT){result=true;}
+	if(token == END || token == ELSE || token == ELSIF || token == ENDIF || token == ENDLOOP || token == WHENOTHERS || token == EXIT){
+		follow_token=true;
 		result = true;
 	}
 	if (debug) printf("out_suquence_of_statement \n");
