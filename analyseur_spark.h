@@ -56,7 +56,9 @@ typedef enum {
  REVERSE,
  ENDLOOP,
  TO,
- LOOP
+ LOOP,
+ PUT,
+ GET
 } typetoken;
 
 extern int yylex();
@@ -84,6 +86,8 @@ bool _exit_statement();
 bool _case_statement();
 bool _when_statement();
 bool _when_others_statement();
+bool _put_statement();
+bool _get_statement();
 
 bool _boucle_statements();
 bool _for_statements();

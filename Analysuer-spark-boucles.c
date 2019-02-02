@@ -28,7 +28,7 @@ int main() {
 	errorTmp = (error*)malloc(sizeof(error));
 
 	_read_token();
-	if (_program() && getNbrErrors() == 0) {
+	if (_put_statement() && getNbrErrors() == 0) {
 		puts("\n---Valide_Syntax --- \n");
 	} else {
 		puts("\n---Invalide_Syntax  --- \n");
@@ -584,7 +584,7 @@ bool _simple_expression_aux(){
 		}
 
 	}else if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
-			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || || token == IN){
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == IN){
 
 		result = true;
 		follow_token = true;
@@ -749,6 +749,54 @@ bool _when_others_statement(){
 	}
 	if(debug) printf("out_when_others_statement\n");
 	return result;
+}
+
+// _get_statement :: "Get" "(" IDF ")" ;
+
+bool _get_statement(){
+	if(debug){printf("in_get_statement\n");}
+	bool result= false;
+	if(token == GET){
+		_read_token();
+		if(token == LEFT_PARENTHESIS){
+			_read_token();
+			if(token == IDF){
+				_read_token();
+				if(token == RIGHT_PARENTHESIS){
+					_read_token();
+					if(token == PVIRG){
+						result=true;
+					}
+				}
+			}
+		}
+	}
+	if(debug){printf("out_get_statement\n");}
+	return result;
+}
+
+//_put_statement :: "Put" "(" _term ")" ";"
+
+bool _put_statement(){
+	if(debug){printf("in_put_statement\n");}
+	bool result = false;
+	if(token == PUT){
+		_read_token();
+		if(token == LEFT_PARENTHESIS){
+			_read_token();
+			if(_term()){
+				_read_token();
+				if(token == RIGHT_PARENTHESIS){
+					_read_token();
+					if(token == PVIRG){
+						result=true;
+					}
+				}
+			}
+		}
+	}
+	return result;
+	if(debug){printf("out_put_statement\n");}
 }
 
 

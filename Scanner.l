@@ -13,6 +13,8 @@
 %%
 "procedure" 			{if (debug) printf(" proc(%s)",yytext); return PROCEDURE;}
 "is" 				{if (debug) printf(" IS "); return IS;}
+"Put"				{if (debug) printf("PUT"); return PUT;}
+"Get"				{if (debug) printf("GET"); return GET;}
 "case"				{if (debug) printf("CASE"); return CASE;}
 "when others"			{if(debug) printf("WHENOTHERS");return WHENOTHERS; }
 "when"				{if(debug) printf("WHEN"); return WHEN; }
