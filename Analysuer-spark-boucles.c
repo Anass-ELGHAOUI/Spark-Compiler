@@ -744,15 +744,15 @@ bool _suquence_of_statement() {
 	bool result = false;
 
 	bool resulttmp = true;
-	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != EXIT){
-		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement() || _if_statement()){
+	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDCASE && token != ENDLOOP && token != WHEN  &&  token != WHENOTHERS && token != EXIT){
+		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement() || _if_statement()){	
 			resulttmp = true;
 		}
 		_read_token();
 		if(!resulttmp) break;
 	}
-	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != EXIT){result=true;}
-	if(token == END || token == ELSE || token == ELSIF || token == ENDIF || token == ENDLOOP || token == WHENOTHERS || token == EXIT){
+	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != WHEN &&token != EXIT){result=true;}
+	if(token == END || token == ELSE || token == ELSIF || token == ENDIF || token == ENDLOOP || token == WHENOTHERS || token == WHEN|| token == EXIT || token == ENDCASE ){
 		follow_token=true;
 		result = true;
 	}
@@ -843,15 +843,38 @@ bool _case_statement(){
 		_read_token();
 		if(token== IDF){
 			_read_token();
+			//generer
+			int adresseId;
+			if(isInTabSymb(idfvalue.value)){
+				adresseId=adresseInTabSymb(idfvalue.value);
+			}
+			int sauvBeginIf=getCurrentIndexPile()+1;
 			if(token== IS){
 				_read_token();
-				while(token == WHEN){ resultWhen=_when_statement();	_read_token();}
+				while(token == WHEN){ 
+					//generer
+					genererInstInt(LDA,adresseId);
+					resultWhen=_when_statement();
+					_read_token();
+				}
 				if(resultWhen){
+
 					if(_when_others_statement()){
+
 						_read_token();
 						if(token== ENDCASE){
 							_read_token();
+
 							if(token==PVIRG){
+								//generer
+								int i=sauvBeginIf;
+								for(;i<getCurrentIndexPile()+1;i++){
+									if(tabCode[i].inst==BRN){
+										tabCode[i].type=INTEGER;
+										tabCode[i].paramI.intValue=getCurrentIndexPile()+1;
+									}
+								}
+								
 								result = true;
 							}
 						}
@@ -873,6 +896,10 @@ bool _when_statement(){
 	if(token== WHEN){
 		_read_token();
 		if(_term()){
+			//generer
+			genererMiInst(EQL);
+			genererMiInst(BZE);
+			int sauvBze=getCurrentIndexPile();
 			_read_token();
 			if(token== IMPLIQUE){
 				_read_token();
@@ -880,6 +907,10 @@ bool _when_statement(){
 					result=true;
 				}
 			}
+			//generer
+			genererMiInst(BRN);
+			tabCode[sauvBze].type=INTEGER;
+			tabCode[sauvBze].paramI.intValue=getCurrentIndexPile()+1;
 		}
 	}else if(token== WHENOTHERS){
 		result=true;
@@ -893,14 +924,12 @@ bool _when_others_statement(){
 	if(debug) printf("in_when_others_statement\n");
 	bool result=false;
 	if(token == WHENOTHERS){
+		
 		_read_token();
 		if(token == IMPLIQUE){
 			_read_token();
 			if(_suquence_of_statement()){
-				_read_token();
-				if(_exit_statement()){
-					result=true;
-				}
+				result =true;
 			}
 		}
 	}
