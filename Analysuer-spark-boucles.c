@@ -368,10 +368,17 @@ bool _if_statement(){
 		_read_token();
 		if(_condition()){
 			_read_token();
+			//generer 
+			genereMiInst(BZE);
+			int sauv=ip;
 			if(token == THEN){
 				_read_token();
 				if(_suquence_of_statement()){
 					_read_token();
+					//generer
+					tabCode[sauv].type=INTEGER;
+					tabCode[sauv].paramI.intValue=ip+1;
+
 					while(token == ELSIF){resultTmp=_elsif_statement();_read_token();}
 					if(token == ELSE  && resultTmp ){resultTmp=_ifaux_statement(); _read_token();}
 					if(token == ENDIF && resultTmp ){
@@ -401,10 +408,16 @@ bool _elsif_statement() {
 		_read_token();
 		if(_condition()) {
 			_read_token();
+			//generer 
+			genereMiInst(BZE);
+			int sauv=ip;
 			if(token == THEN) {
 				_read_token();
 				if(_suquence_of_statement()) {
 					_read_token();
+					//generer
+					tabCode[sauv].type=INTEGER;
+					tabCode[sauv].paramI.intValue=ip+1;
 					if(token == ELSE || token == ENDIF || token == ELSIF){
 						follow_token = true;
 						result = true;
@@ -684,7 +697,7 @@ bool _suquence_of_statement() {
 
 	bool resulttmp = true;
 	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != EXIT){
-		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()){
+		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement()){
 			resulttmp = true;
 		}
 		_read_token();
@@ -723,7 +736,7 @@ bool _assignement_statement() {
 	if (debug) printf("in_assignement_statement \n");
 	bool result = false;
 	if(token == IDF) {
-
+		
 		if(isInTabSymb(idfvalue.value)){
 			tabSymb symb = getSymbByName(idfvalue.value);
 			if(symb.isCste){
@@ -732,7 +745,8 @@ bool _assignement_statement() {
 				errorTmp->next=NULL;
 				addOnTabError(errorTmp);
 			}
-
+		//generer
+		genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
 		}
 		_read_token();
 		if(token == ASSIGNMENT) {
