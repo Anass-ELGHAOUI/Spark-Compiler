@@ -55,22 +55,22 @@ void genererInstString(Pcode code,char* string){
 
 char* diplayOnCode(Pcode code){
 	switch (code){	
-			case AND:return "AD";
-			case XOR:return "XR";
+			case AND:return "AND";
+			case XOR:return "XOR";
 			case ANDN:return "ANDN";
 			case HLT:return "HLT";
-			case BZE:return "BZE";
-			case BRN:return "BRN";
-			case INT:return "INT";
+			case BZE:return "BZE"; 
+			case BRN:return "BRN"; 
+			case INT:return "INT"; 
 			case LEQ:return "LEQ";
 			case GEQ:return "GEQ";
 			case LSS:return "LSS";
 			case GTR:return "GTR";
 			case NE:return "NE";
 			case EQL:return "EQL";
-			case LDA:return "LDA";
+			case LDA:return "LDA"; 
 			case STO:return "STO";
-			case LDI:return "LDI";
+			case LDI:return "LDI"; 
 			case ADD:return "ADD";
 			case SUB:return "SUB";
 			case MUL:return "MUL";
