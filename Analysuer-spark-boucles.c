@@ -262,24 +262,64 @@ bool _boucle_statements(){
 bool _for_statements(){
 	if (debug) printf("in_for_statement \n");
 	bool result = false;
+	//generer
+	int sauvBze;
+	bool isReverse=false;
+	
 	if(token == FOR){
 		_read_token();
 		if(token == IDF){
+			int adresseVar=adresseInTabSymb(idfvalue.value);
+			
+			//generer
+			genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
 			_read_token();
 			if(token == IN){
 				_read_token();
 				if(token == REVERSE){
+					isReverse=true;
 					_read_token();
+					
 				}
 				if(token == NUMERIC){
+					int firstNumber=numericvalue.value;
 					_read_token();
 					if(token == TO){
 						_read_token();
 						if(token == NUMERIC){
 							_read_token();
+							
+								//generer
+								genererInstInt(LDI,(isReverse)?numericvalue.value:firstNumber);
+								genererMiInst(STO);
+								int sauvDebutBoucle=getCurrentIndexPile()+1;
+								genererInstInt(LDA,adresseVar);
+								genererMiInst(LDV);
+								genererInstInt(LDI,(isReverse)?firstNumber:numericvalue.value);
+								genererMiInst(NE);
+								genererMiInst(BZE);
+								sauvBze=getCurrentIndexPile();
+								
+							
 							if(_loop_statements()){
 								result=true;							
 							}
+							//generer
+							genererInstInt(LDA,adresseVar);
+							genererMiInst(LDV);
+							genererInstInt(LDI,1);
+							genererMiInst((isReverse)?SUB:ADD);
+							tabCode[sauvBze].type=INTEGER;
+							tabCode[sauvBze].paramI.intValue=getCurrentIndexPile()+1;
+							genererInstInt(BRN,sauvDebutBoucle);
+							int i=sauvBze+1;
+							for(;i<getCurrentIndexPile()+1;i++){
+								if(tabCode[i].inst==BZE){
+									tabCode[i].type=INTEGER;
+									tabCode[i].paramI.intValue=getCurrentIndexPile()+1;
+								}
+							}
+							
 						}
 					}				
 				}
@@ -705,7 +745,7 @@ bool _simple_expression_aux(){
 		}
 
 	}else if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
-			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == IN){
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == IN || token == LOOP){
 
 		result = true;
 		follow_token = true;
@@ -782,14 +822,34 @@ bool _suquence_of_statement() {
 	bool result = false;
 
 	bool resulttmp = true;
-	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDCASE && token != ENDLOOP && token != WHEN  &&  token != WHENOTHERS && token != EXIT){
-		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement() || _if_statement()){	
-			resulttmp = true;
-		}
+	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDCASE && token != ENDLOOP && token != WHEN  &&  token != WHENOTHERS){
+		resulttmp = _null_statement();
+		if(!resulttmp){
+			resulttmp = _assignement_statement();
+		} 
+		if(!resulttmp){
+			resulttmp = _exit_statement();
+		} 
+		if(!resulttmp){
+			resulttmp = _boucle_statements();
+		} 
+		if(!resulttmp){
+			resulttmp = _case_statement();
+		} 
+		if(!resulttmp){
+			resulttmp = _get_statement();
+		} 
+		if(!resulttmp){
+			resulttmp = _put_statement();
+		} 
+		if(!resulttmp){
+			resulttmp = _if_statement();
+		} 
+		
 		_read_token();
 		if(!resulttmp) break;
 	}
-	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != WHEN &&token != EXIT){result=true;}
+	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != WHEN){result=true;}
 	if(token == END || token == ELSE || token == ELSIF || token == ENDIF || token == ENDLOOP || token == WHENOTHERS || token == WHEN|| token == EXIT || token == ENDCASE ){
 		follow_token=true;
 		result = true;
@@ -855,17 +915,29 @@ bool _assignement_statement() {
 }
 
 /*
-exit_statement:: "exit" _exit_aux ";"
+exit_statement:: "exit" ["when" _condition] ";"
 */
 
 bool _exit_statement() {
 	if (debug) printf("in_exit_statement \n");
 	bool result = false;
+		printf("\t\t\t\t int exit statement");
 	if(token == EXIT) {
+		printf("\t\t\t\t int exit statement");
 		_read_token();
-		if(token == PVIRG) {
+		if(token == WHEN){
+			_read_token();
+			if(_condition()){
+				_read_token();
+				if(token == PVIRG) {
+					result = true;
+				}
+			}
+		}else if(token == PVIRG) {
 			result = true;
 		}
+	//generer
+	genererMiInst(BZE);
 	}
 	if (debug) printf("out_exit_statement \n");
 	return result;
@@ -987,6 +1059,13 @@ bool _get_statement(){
 			if(token == IDF){
 				//generer
 				if(isInTabSymb(idfvalue.value)){
+					tabSymb symbtmp = getSymbByName(idfvalue.value);
+					if(symbtmp.isCste){
+						strcpy(errorTmp->msgError,"constant attribute can not be variable");
+						errorTmp->line = linenumber.line;
+						errorTmp->next=NULL;
+						addOnTabError(errorTmp);
+					}
 					genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
 					genererMiInst(INN);
 					result = true ;

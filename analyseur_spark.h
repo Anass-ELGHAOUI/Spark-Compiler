@@ -90,6 +90,7 @@ bool _put_statement();
 bool _get_statement();
 
 bool _boucle_statements();
+bool _loop_aux();
 bool _for_statements();
 bool _loop_statements();
 bool _while_statements();
