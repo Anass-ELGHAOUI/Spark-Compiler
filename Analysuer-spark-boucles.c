@@ -248,7 +248,7 @@ bool _type_declaration(){
 bool _boucle_statements(){
 	if (debug) printf("in_boucle_statement \n");
 	bool result = false;
-	if(_for_statements() || _while_statements() || _loop_statements()){
+	if(_for_statements() || _while_statements() || _loop_aux()){
 		result = true;
 	}
 	if (debug) printf("out_boucle_statement \n");
@@ -291,6 +291,27 @@ bool _for_statements(){
 	
 }
 
+bool _loop_aux(){
+	if(debug)printf("in_loop_aux");
+	bool result=false;
+	int sauvDebutBoucle=getCurrentIndexPile()+1;
+	if(_loop_statements()){
+		result=true;
+		//generer
+		genererInstInt(BRN,sauvDebutBoucle);
+		int i=sauvDebutBoucle;
+		for(;i<getCurrentIndexPile()+1;i++){
+			if(tabCode[i].inst==BZE){
+				tabCode[i].type=INTEGER;
+				tabCode[i].paramI.intValue=getCurrentIndexPile()+1;
+			}
+		}
+	}
+	if(debug)printf("out_loop_aux");
+	return result;
+}
+
+
 /*
    loop_statements -> LOOP _sequence_of_statements END LOOP PVIRG
  */
@@ -322,11 +343,28 @@ bool _while_statements(){
 	bool result = false;
 	if(token == WHILE){
 		_read_token();
+		//generer
+		int sauvDebutBoucle=getCurrentIndexPile()+1;
 		if(_condition()){
+			//generer
+			genererMiInst(BZE);
+			int sauvBze=getCurrentIndexPile();
 			_read_token();
 			if(_loop_statements()){
 				result = true;
+				//generer
+				genererInstInt(BRN,sauvDebutBoucle);
+				tabCode[sauvBze].type=INTEGER;
+				tabCode[sauvBze].paramI.intValue=getCurrentIndexPile()+1;
+				int i=sauvBze+1;
+				for(;i<getCurrentIndexPile()+1;i++){
+					if(tabCode[i].inst==BZE){
+						tabCode[i].type=INTEGER;
+						tabCode[i].paramI.intValue=getCurrentIndexPile()+1;
+					}
+				}
 			}
+			
 		}
 	}
 	if (debug) printf("out_while_statement \n");
@@ -630,7 +668,7 @@ bool _simple_expression(){
 		if(resultSimpleExp){
 			result=true;
 		}if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
-			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN){
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN || token == LOOP){
 			result=true;
 			follow_token=true;
 		}
