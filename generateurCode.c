@@ -25,20 +25,44 @@ void genererMiInst(Pcode code){
 
 }
 
-void genererInst(Pcode code,int num){
+void genererInstInt(Pcode code,int num){
 	
 	if(ip<tailleCode){
 		tabCode[++ip].inst=code;
-		tabCode[ip].num=num;
+		tabCode[ip].type=INTEGER;
+		tabCode[ip].paramI.intValue=num;
 	}else{
 		//Affichage d'erreur
 	}
 
 }
 
+void genererInstFloat(Pcode code,float decimal){
+	if(ip<tailleCode){
+		tabCode[++ip].inst=code;
+		tabCode[ip].type=FLOAT;
+		tabCode[ip].paramI.floatValue=decimal;
+	}else{
+		//Affichage d'erreur
+	}
+}
+
+void genererInstString(Pcode code,char* string){
+	if(ip<tailleCode){
+		tabCode[++ip].inst=code;
+		tabCode[ip].type=STRING;
+		strcpy(tabCode[ip].paramI.stringValue,string);
+	}else{
+		//Affichage d'erreur
+	}
+}
+
 
 char* diplayOnCode(Pcode code){
-	switch (code){
+	switch (code){	
+			case AND:return "AD";
+			case XOR:return "XR";
+			case ANDN:return "ANDN";
 			case HLT:return "HLT";
 			case BZE:return "BZE";
 			case BZN:return "BZN";
@@ -65,7 +89,14 @@ char* diplayOnCode(Pcode code){
 void displayAllPcode(){
 	int i;
 	for(i=0;i<ip+1;i++){
-		printf("\t%s\t%d\n",diplayOnCode(tabCode[i].inst),tabCode[i].num);
+		printf("\t%s",diplayOnCode(tabCode[i].inst));
+
+		switch(tabCode[i].type){
+			case INTEGER : printf("\t%d",tabCode[i].paramI.intValue); break;	
+			case FLOAT : printf("\t%f",tabCode[i].paramI.floatValue); break;
+			case STRING : printf("\t%s",tabCode[i].paramI.stringValue); break;	
+		} 
+		printf("\n");
 	}
 }
 

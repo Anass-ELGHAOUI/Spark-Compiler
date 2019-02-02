@@ -5,6 +5,7 @@
 #include "analyseur_spark.h"
 #include "error.h"
 #include "tabSymb.h"
+#include "generateurCode.h"
 #define debug true
 
 typetoken token;
@@ -35,6 +36,8 @@ int main() {
 		showErrors();
 	}
 	showAllSymbols();
+	printf("\t--PCode--\n");
+	displayAllPcode();
 	return 0;
 }
 
@@ -153,6 +156,7 @@ bool _basic_declaration(){
 	symbTmp.isCste = false;
 	symbTmp.adresse = getNbrSymb();
 	if(token == IDF){
+		
 		strcpy(symbTmp.name,idfvalue.value);
 		if(isInTabSymb(symbTmp.name)){
 			strcpy(errorTmp->msgError,"variable redefined");
@@ -160,6 +164,7 @@ bool _basic_declaration(){
 			errorTmp->next=NULL;
 			addOnTabError(errorTmp);
 		}
+
 		_read_token();
 		if(token == TWOPOINTS){
 			_read_token();
@@ -172,10 +177,17 @@ bool _basic_declaration(){
 				_read_token();
 				if(token == ASSIGNMENT){
 					_read_token();
+					if(token == NUMERIC | token == DECIMAL | token == STRING_LITERAL | token == IDF) {
+						//generer
+						genererInstInt(LDA,symbTmp.adresse);
+					}
 					if(_term()){
+						
 						typetoken tokentmp = token;
 						_read_token();
 						if(token == PVIRG){
+							//generer
+							genererMiInst(STO);
 							result = true;
 							if(addOnTabSymb(symbTmp)){
 								switch(tokentmp){
@@ -473,6 +485,8 @@ bool _condition_aux(){
 	if(debug) printf("in_condition_aux");
 	bool result=false;
 	if(token == AND || token == OR){
+		//generer
+		typetoken tokenTmp=token;
 		_read_token();
 		if(token == THEN){
 			_read_token();	
@@ -480,11 +494,18 @@ bool _condition_aux(){
 		if(_relation()){
 			result = true;
 		}
+		//generer
+		if(token == AND){genererMiInst(AD);}
+		else{genererMiInst(OR);}
 	}else if(token == XOR){
+		//generer
+		typetoken tokenTmp=token;
 		_read_token();
 		if(_relation()){
 			result = true;
 		}
+		//generer
+		genererMiInst(XR);
 	}else if(token == THEN | token == PVIRG | token == LOOP ){
 			result = true;
 			follow_token= true;
@@ -504,9 +525,18 @@ bool _relation() {
 		_read_token();
 		if(token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
 			token == LESS_THAN_EQ || token == GREATER_THAN_EQ) {
+			//generer
+			typetoken tokenTmp=token;
 			_read_token();
 			if(_simple_expression()) {
 				result = true;
+				//generer
+				if(token == DIFF){genererMiInst(NE);}
+				else if(tokenTmp == EQ){genererMiInst(EQL);}
+				else if(tokenTmp == LESS_THAN){genererMiInst(LSS);}
+				else if(tokenTmp == GREATER_THAN){genererMiInst(GTR);}
+				else if(tokenTmp == LESS_THAN_EQ){genererMiInst(LEQ);}
+				else if(tokenTmp == GREATER_THAN_EQ){genererMiInst(GEQ);}
 			}
 		}
 	}
@@ -578,9 +608,19 @@ bool _simple_expression_aux(){
 	if(debug) printf("in_simple_expression_aux\n");
 	bool result=false;
 	if(token == PLUS_SIGN || token == HYPHEN_MINUS || token == AMPERSAND){
+		//sauvgarde operation
+		typetoken tokenTmp=token;
 		_read_token();
 		if(_term()){
 			result = true;
+		}
+		//generer
+		if(tokenTmp==PLUS_SIGN){
+			genererMiInst(ADD);
+		}else if(tokenTmp == HYPHEN_MINUS){
+			genererMiInst(SUB);
+		}else{
+			genererMiInst(ANDN);
 		}
 
 	}else if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
@@ -598,8 +638,31 @@ term::
 bool _term() {
 	if (debug) printf("in_term \n");
 		bool result = false ;
-	if( token == V_NULL | token == NUMERIC | token == DECIMAL | token == STRING_LITERAL | token == IDF) {
+		
+	if( token == V_NULL ){result = true ;}
+	if(token == NUMERIC ){
+		//generer
+		genererInstInt(LDI,numericvalue.value);
 		result = true ;
+	}
+	if(token == DECIMAL){
+		//generer
+		genererInstFloat(LDI,decimalvalue.value);	
+		result = true ;
+	}
+	if(token == STRING_LITERAL){
+		//generer
+		genererInstString(LDI,stringvalue.value);
+		result = true ;
+	}
+	if(token == IDF){
+		//generer
+		if(isInTabSymb(idfvalue.value)){
+			genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
+			genererMiInst(LDV);
+			result = true ;
+		}
+
 	}
 	if (debug) printf("out_term \n");
 	return result;
@@ -612,7 +675,7 @@ suquence_of_statement:: statement suquence_of_statement | epsilon
 bool _suquence_of_statement() {
 	if (debug) printf("in_suquence_of_statement \n");
 	bool result = false;
-	if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()){
+	if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()||_get_statement()||_put_statement() || _if_statement()){
 		result = true;
 	}
 	if (debug) printf("out_suquence_of_statement \n");
@@ -644,11 +707,18 @@ bool _assignement_statement() {
 	if (debug) printf("in_assignement_statement \n");
 	bool result = false;
 	if(token == IDF) {
+		//generer
+		if(isInTabSymb(idfvalue.value)){
+			genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
+			result = true ;
+		}
 		_read_token();
 		if(token == ASSIGNMENT) {
 			_read_token();
 			if(_simple_expression()) {
 				if(token == PVIRG) {
+					//generer
+					genererMiInst(STO);
 					result = true;
 				}
 			}
@@ -761,7 +831,14 @@ bool _get_statement(){
 		if(token == LEFT_PARENTHESIS){
 			_read_token();
 			if(token == IDF){
+				//generer
+				if(isInTabSymb(idfvalue.value)){
+					genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
+					genererMiInst(INN);
+					result = true ;
+				}
 				_read_token();
+				
 				if(token == RIGHT_PARENTHESIS){
 					_read_token();
 					if(token == PVIRG){
@@ -787,6 +864,8 @@ bool _put_statement(){
 			if(_term()){
 				_read_token();
 				if(token == RIGHT_PARENTHESIS){
+					//generer
+					genererMiInst(PRN);
 					_read_token();
 					if(token == PVIRG){
 						result=true;

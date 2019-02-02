@@ -40,6 +40,18 @@ bool isInTabSymb(char* nom){
 	if(debug) printf("_out_isOntabSymb_function_\n");
 	return result;
 }
+// return addresse in the tab
+
+int adresseInTabSymb(char* nom){
+	if(debug) printf("_in_isOntabSymb_function_\n");
+	int i=0;
+	for(i=0;i<NBVAR;++i){
+		if(strcmp(TS[i].name,nom)==0)
+			return TS[i].adresse;	
+	}
+	if(debug) printf("_out_isOntabSymb_function_\n");
+	return -1;
+}
 // show all the symboles
 void showAllSymbols(){
 	if(debug) printf("_in_showAllSymb_function_\n");

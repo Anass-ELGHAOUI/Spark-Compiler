@@ -37,6 +37,7 @@ typedef struct{
 
 extern bool addOnTabSymb(tabSymb element);
 extern bool isInTabSymb(char* nom);
+extern int adresseInTabSymb(char* nom);
 extern void showAllSymbols();
 extern int getNbrSymb();
 extern void addIntValueOfSymb(tabSymb elemen,int value);
