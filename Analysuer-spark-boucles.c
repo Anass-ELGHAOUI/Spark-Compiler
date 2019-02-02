@@ -18,6 +18,8 @@ numericvaluetype numericvalue;
 decimalvaluetype decimalvalue;
 
 static bool isInBodyPart = false;
+static bool isInAssignementPart = false;
+static typetoken assignementType;
 
 
 char* nameProc;
@@ -661,22 +663,34 @@ term::
  */
 bool _term() {
 	if (debug) printf("in_term \n");
-		bool result = false ;
-		
+	bool result = false ;
+	bool errorDetected = false;	
 	if( token == V_NULL ){result = true ;}
 	if(token == NUMERIC ){
 		//generer
 		genererInstInt(LDI,numericvalue.value);
+		if( isInAssignementPart && assignementType!=INTEGER){
+			//generer erreur
+			errorDetected = true;
+		}
 		result = true ;
 	}
 	if(token == DECIMAL){
 		//generer
-		genererInstFloat(LDI,decimalvalue.value);	
+		genererInstFloat(LDI,decimalvalue.value);
+		if( isInAssignementPart && (assignementType!=FLOAT || assignementType!=INTEGER)){
+			//generer erreur
+			errorDetected = true;
+		}	
 		result = true ;
 	}
 	if(token == STRING_LITERAL){
 		//generer
 		genererInstString(LDI,stringvalue.value);
+		if( isInAssignementPart && assignementType!=STRING){
+			//generer erreur
+			errorDetected = true;
+		}
 		result = true ;
 	}
 	if(token == IDF){
@@ -684,9 +698,20 @@ bool _term() {
 		if(isInTabSymb(idfvalue.value)){
 			genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
 			genererMiInst(LDV);
+			tabSymb symbtmp = getSymbByName(idfvalue.value);
+			if( isInAssignementPart && assignementType!=symbtmp.type){
+				//generer erreur
+				errorDetected = true;
+			}
 			result = true ;
 		}
 
+	}
+	if(errorDetected){
+		strcpy(errorTmp->msgError,"incompatible type exception");
+		errorTmp->line = linenumber.line;
+		errorTmp->next=NULL;
+		addOnTabError(errorTmp);	
 	}
 	if (debug) printf("out_term \n");
 	return result;
@@ -742,9 +767,10 @@ bool _assignement_statement() {
 	if (debug) printf("in_assignement_statement \n");
 	bool result = false;
 	if(token == IDF) {
-		
+		isInAssignementPart = true;
 		if(isInTabSymb(idfvalue.value)){
 			tabSymb symb = getSymbByName(idfvalue.value);
+			assignementType = symb.type;
 			if(symb.isCste){
 				strcpy(errorTmp->msgError,"constant attribute can not be variable");
 				errorTmp->line = linenumber.line;
@@ -766,6 +792,7 @@ bool _assignement_statement() {
 			}
 			
 		}
+		isInAssignementPart = false;
 	}
 	if (debug) printf("out_assignement_statement \n");
 	return result;
