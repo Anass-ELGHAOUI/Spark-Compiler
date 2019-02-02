@@ -95,3 +95,11 @@ bool _body_program();
 bool _program_specification();
 bool _basic_declaration();
 bool _type_declaration();
+
+
+void set_idf_attribute(char * idf);
+void set_line_attribute(int line);
+void set_numeric_attribute(int numeric);
+void set_decimal_attribute(float decimal);
+void set_string_attribute(char* string);
+

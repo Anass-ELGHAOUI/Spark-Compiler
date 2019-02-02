@@ -6,5 +6,6 @@ typedef struct error{
 }error;
 
 
-extern error* addOnTabError(error* element);
+extern void addOnTabError(error* element);
 extern void showErrors();
+extern int getNbrErrors();

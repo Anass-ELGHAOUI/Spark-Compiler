@@ -5,6 +5,7 @@
 	#endif
 	#define debug true
 	#include "analyseur_spark.h"
+	static int my_yylineno = 1;
 %}
 
 %option noyywrap
@@ -26,9 +27,9 @@
 "package" 			{if (debug) printf(" package (%s)",yytext); return PACKAGE;}
 "with" 				{if (debug) printf(" with "); return WITH;}
 "use" 				{if (debug) printf(" use "); return USE;}
-"String" 			{if (debug) printf(" String "); return STRING;}
-"Integer" 			{if (debug) printf(" Integer "); return INTEGER;}
-"Float" 			{if (debug) printf(" Float "); return FLOAT;}
+"String" 			{if (debug) printf(" String "); set_string_attribute(""); return STRING;}
+"Integer" 			{if (debug) printf(" Integer "); set_numeric_attribute(0); return INTEGER;}
+"Float" 			{if (debug) printf(" Float "); set_decimal_attribute(0.0); return FLOAT;}
 "constant" 			{if (debug) printf(" constant "); return CSTE;}
 "xor"				{if (debug) printf(" xor "); return XOR;}
 "and" 				{if (debug) printf(" and "); return AND;}
@@ -43,8 +44,8 @@
 "elsif" 			{if (debug) printf(" elsif "); return ELSIF;}
 "null"				{if (debug) printf(" null "); return V_NULL;}
 "--"[^/n]			{if (debug) printf(" Comment ");}
-[-+]?[0-9]+ 		{if (debug) printf("NUMERIC(%s) ",yytext); return NUMERIC;}
-[-+]?[0-9]+\.[0-9]* {if (debug) printf("DECIMAL(%s) ",yytext); return DECIMAL;}
+[0-9]+ 				{if (debug) printf("NUMERIC(%s) ",yytext); set_numeric_attribute(atoi(yytext)); return NUMERIC;}
+[0-9]+\.[0-9]* 			{if (debug) printf("DECIMAL(%s) ",yytext); set_decimal_attribute(atof(yytext)); return DECIMAL;}
 "/=" 				{if (debug) printf(" diff "); return DIFF;}
 ":=" 				{if (debug) printf(" assignment "); return ASSIGNMENT;}
 "=" 				{if (debug) printf(" equals  "); return EQ;}
@@ -61,9 +62,10 @@
 ":" 				{if (debug) printf(" TWOPOINTS "); return TWOPOINTS;}
 "(" 				{if (debug) printf(" left_parenthesis "); return LEFT_PARENTHESIS;}
 ")" 				{if (debug) printf(" right_parenthesis "); return RIGHT_PARENTHESIS;}
-[\"][^\n]*[\"]			{if (debug) printf(" string_literal "); return STRING_LITERAL;}  
-[_a-zA-Z][_a-zA-Z0-9]*  	{if (debug) printf(" IDF(%s) ",yytext); return IDF;}
-[ \t\n]+ 
+[\"][^\n]*[\"]			{if (debug) printf(" string_literal "); set_string_attribute(yytext); return STRING_LITERAL;}  
+[_a-zA-Z][_a-zA-Z0-9]*  	{if (debug) printf(" IDF(%s) ",yytext); set_idf_attribute(yytext); return IDF;}
+[ \t]+ 
+\n				{my_yylineno++; set_line_attribute(my_yylineno);}
 .				    printf("ERR_LEX( %s )\n", yytext);
 
 %%

@@ -9,8 +9,8 @@
 error* errorsList = NULL;
 
 static int NBERRORS = 0;
-
-error* addOnTabError(error* element){
+// adding a new error to the errors list
+void addOnTabError(error* element){
 	if(debug) printf("_in_add_On_Tab_Error_\n");
 	error* new = (error*)malloc(sizeof(error));
 	new->line = element->line;
@@ -28,9 +28,8 @@ error* addOnTabError(error* element){
 	}
 	NBERRORS++;
 	if(debug) printf("_out_add_On_Tab_Error_\n");
-	return errorsList;
 }
-
+//show all the errors
 void showErrors(){
 	if(debug) printf("_in_show_Errors_\n");
 	error* tmp = errorsList;
@@ -40,5 +39,9 @@ void showErrors(){
 		tmp = tmp->next;
 	}
 	if(debug) printf("_out_show_Errors_\n");
+}
+//geting the number of errors detected
+int getNbrErrors(){
+	return NBERRORS;
 }
 
