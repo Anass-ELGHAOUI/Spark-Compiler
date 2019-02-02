@@ -28,7 +28,7 @@ int main() {
 	errorTmp = (error*)malloc(sizeof(error));
 
 	_read_token();
-	if (_put_statement() && getNbrErrors() == 0) {
+	if (_program() && getNbrErrors() == 0) {
 		puts("\n---Valide_Syntax --- \n");
 	} else {
 		puts("\n---Invalide_Syntax  --- \n");
