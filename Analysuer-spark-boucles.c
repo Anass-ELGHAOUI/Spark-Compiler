@@ -16,6 +16,8 @@ linevalue linenumber;
 numericvaluetype numericvalue;
 decimalvaluetype decimalvalue;
 
+static bool isInBodyPart = false;
+
 
 char* nameProc;
 //variable used to save a new symbole
@@ -28,12 +30,12 @@ int main() {
 	errorTmp = (error*)malloc(sizeof(error));
 
 	_read_token();
-	if (_program() && getNbrErrors() == 0) {
+	if (_program()) {
 		puts("\n---Valide_Syntax --- \n");
 	} else {
 		puts("\n---Invalide_Syntax  --- \n");
-		showErrors();
 	}
+	showErrors();
 	showAllSymbols();
 	return 0;
 }
@@ -49,13 +51,14 @@ void _read_token(){
 //_program -> _use_clause _program_body
 bool _program(){
 	if (debug) printf("in_program_statement \n");
-	bool result = true;
+	bool result = false;
+	bool resulttmp = true;
 	while(token != PROCEDURE){
-		result = _use_clause();
+		resulttmp = _use_clause();
 		_read_token();
-		if(!result) break;
+		if(!resulttmp) break;
 	}
-	if(result){
+	if(resulttmp){
 		if(_body_program()){
 			result = true;		
 		}
@@ -73,7 +76,6 @@ bool _use_clause(){
 			_read_token();
 			if(token == PVIRG){
 				result = true;	
-				//_use_clause();
 			}		
 		}
 	
@@ -100,10 +102,11 @@ bool _body_program(){
 			}
 			if(resulttmp){
 				if(token == V_BEGIN){
+					isInBodyPart = true;
 					_read_token();
 					if(_suquence_of_statement()){
-						_read_token();
 						if(token == END){
+							isInBodyPart = false;
 							_read_token();
 							if(token == IDF){
 								if(debug) printf("name proc : %s\n",nameProc);
@@ -174,14 +177,20 @@ bool _basic_declaration(){
 					_read_token();
 					if(_term()){
 						typetoken tokentmp = token;
+						if((symbTmp.type == INTEGER && tokentmp != NUMERIC) || (symbTmp.type == FLOAT && tokentmp != DECIMAL) || (symbTmp.type == STRING && tokentmp != STRING_LITERAL)){
+							strcpy(errorTmp->msgError,"variable type and value affected are different");
+							errorTmp->line = linenumber.line;
+							errorTmp->next=NULL;
+							addOnTabError(errorTmp);
+						}
 						_read_token();
 						if(token == PVIRG){
 							result = true;
 							if(addOnTabSymb(symbTmp)){
 								switch(tokentmp){
-									case NUMERIC : addIntValueOfSymb(symbTmp,numericvalue.value); break;
-									case DECIMAL : addFloatValueOfSymb(symbTmp,decimalvalue.value); break;
-									case STRING_LITERAL : addStringValueOfSymb(symbTmp,stringvalue.value); break;
+									case NUMERIC : addIntValueOfSymb(symbTmp.adresse,numericvalue.value); break;
+									case DECIMAL : addFloatValueOfSymb(symbTmp.adresse,decimalvalue.value); break;
+									case STRING_LITERAL : addStringValueOfSymb(symbTmp.adresse,stringvalue.value); break;
 								}
 							}			
 						}
@@ -556,10 +565,6 @@ bool _simple_expression(){
 		}
 		if(resultSimpleExp){
 			result=true;
-		}if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
-			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN){
-			result=true;
-			follow_token=true;
 		}
 		
 	}
@@ -609,10 +614,19 @@ bool _term() {
 suquence_of_statement:: statement suquence_of_statement | epsilon
  */
  
+//follows of sequence_of_ stat : END - ELSE - ELSIF - ENDIF - ENDLOOP - WHENOTHERS - EXIT
 bool _suquence_of_statement() {
 	if (debug) printf("in_suquence_of_statement \n");
 	bool result = false;
-	if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()){
+	bool resulttmp = true;
+	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != EXIT){
+		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()){
+			resulttmp = true;
+		}
+		_read_token();
+		if(!resulttmp) break;
+	}
+	if(resulttmp){
 		result = true;
 	}
 	if (debug) printf("out_suquence_of_statement \n");
@@ -644,6 +658,15 @@ bool _assignement_statement() {
 	if (debug) printf("in_assignement_statement \n");
 	bool result = false;
 	if(token == IDF) {
+		if(isInTabSymb(idfvalue.value)){
+			tabSymb symb = getSymbByName(idfvalue.value);
+			if(symb.isCste){
+				strcpy(errorTmp->msgError,"constant attribute can not be variable");
+				errorTmp->line = linenumber.line;
+				errorTmp->next=NULL;
+				addOnTabError(errorTmp);
+			}
+		}
 		_read_token();
 		if(token == ASSIGNMENT) {
 			_read_token();
@@ -804,6 +827,14 @@ void set_idf_attribute(char * idf){
 	if(debug) printf("in_set_idf_att\n");
 	idfvalue.value = (char*)malloc(sizeof(char)*strlen(idf)+1);
 	strcpy(idfvalue.value ,idf);
+	if(isInBodyPart && !isInTabSymb(idfvalue.value)){
+			char* msg = (char*)malloc(200*sizeof(char));
+			sprintf(msg,"variable %s is undeclared",idfvalue.value);
+			strcpy(errorTmp->msgError,msg);
+			errorTmp->line = linenumber.line;
+			errorTmp->next=NULL;
+			addOnTabError(errorTmp);
+	}
 	if(debug) printf("out_set_idf_att\n");
 }
 void set_line_attribute(int line){
