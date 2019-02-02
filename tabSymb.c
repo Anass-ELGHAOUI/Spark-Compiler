@@ -59,9 +59,9 @@ void showAllSymbols(){
 	for(int i=0;i<NBVAR;i++){
 		printf(" symbole %d -> name : %s , adresse : %d ",i+1,TS[i].name,TS[i].adresse);
 		switch(TS[i].type){
-			case INTEGER : printf(", value : %d\n",VALUE[TS[i].adresse].intValue); break;	
-			case FLOAT : printf(", value : %f\n",VALUE[TS[i].adresse].floatValue); break;
-			case STRING : printf(", value : %s\n",VALUE[TS[i].adresse].stringValue); break;	
+			case INTEGER : printf(", type : INTEGER, value : %d\n",VALUE[TS[i].adresse].intValue); break;	
+			case FLOAT : printf(", type : FLOAT, value : %f\n",VALUE[TS[i].adresse].floatValue); break;
+			case STRING : printf(", type : STRING, value : %s\n",VALUE[TS[i].adresse].stringValue); break;	
 		} 
 	}
 	if(debug) printf("_out_showAllSymb_function_\n");	
@@ -72,21 +72,31 @@ int getNbrSymb(){
 	return NBVAR;
 }
 
-void addIntValueOfSymb(tabSymb elemen,int value){
+extern tabSymb getSymbByName(char *nom){
+	tabSymb symb;
+	int i;
+	for(i=0;i<NBVAR;i++){
+		if(strcmp(TS[i].name,nom)==0)
+			symb = TS[i];	
+	}
+	return symb;
+}
+
+void addIntValueOfSymb(int adresse,int value){
 	if(debug) printf("_in_addIntValueOfSymb_function_\n");
-	VALUE[TS[NBVAR].adresse].intValue = value;
+	VALUE[adresse].intValue = value;
 	if(debug) printf("_out_addIntValueOfSymb_function_\n");
 }
 
-void addFloatValueOfSymb(tabSymb elemen,float value){
+void addFloatValueOfSymb(int adresse,float value){
 	if(debug) printf("_in_addFloatValueOfSymb_function_\n");
-	VALUE[TS[NBVAR].adresse].floatValue = value;
+	VALUE[adresse].floatValue = value;
 	if(debug) printf("_out_addFloatValueOfSymb_function_\n");
 }
 
-void addStringValueOfSymb(tabSymb elemen,char* value){
+void addStringValueOfSymb(int adresse,char* value){
 	if(debug) printf("_in_addStringValueOfSymb_function_\n");
-	strcpy(VALUE[TS[NBVAR].adresse].stringValue , value);
+	strcpy(VALUE[adresse].stringValue , value);
 	if(debug) printf("_out_addStringValueOfSymb_function_\n");
 }
 

@@ -34,6 +34,7 @@ void showErrors(){
 	if(debug) printf("_in_show_Errors_\n");
 	error* tmp = errorsList;
 	int i=1;
+	printf("\n %d Errors !!! \n",NBERRORS);
 	while(tmp != NULL){
 		printf("error %d in line %d : %s\n",i++,tmp->line,tmp->msgError); 
 		tmp = tmp->next;
