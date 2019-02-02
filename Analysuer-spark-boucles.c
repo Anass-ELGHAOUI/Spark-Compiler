@@ -9,29 +9,33 @@
 
 typetoken token;
 bool follow_token;
+
+idfvaluetype idfvalue;
+stringvaluetype stringvalue;
+linevalue linenumber;
+numericvaluetype numericvalue;
+decimalvaluetype decimalvalue;
+
+
+char* nameProc;
+//variable used to save a new symbole
+static tabSymb symbTmp;
+//variable used to save a new error
+static error* errorTmp;
 //_program()
 int main() {
-/* test tabSymb and error.c
-	tabSymb elm;
-	elm.type = INTEGER;
-	strcpy(elm.name,"x");
-	elm.adresse = 1;
-	addOnTabSymb(elm);
+	linenumber.line = 1;
+	errorTmp = (error*)malloc(sizeof(error));
 
-	error* err = (error*)malloc(sizeof(error));
-	strcpy(err->msgError,"test error");
-	err->line =1;
-	addOnTabError(err); */
-  _read_token();
-   if (_program()) {
-   	puts("\n---Valide_Syntax --- \n");
-   } else {
-    puts("\n---Invalide_Syntax  --- \n");
-   }
-/*
+	_read_token();
+	if (_program() && getNbrErrors() == 0) {
+		puts("\n---Valide_Syntax --- \n");
+	} else {
+		puts("\n---Invalide_Syntax  --- \n");
+		showErrors();
+	}
 	showAllSymbols();
-	showErrors(); */
-  return 0;
+	return 0;
 }
 
 void _read_token(){
@@ -102,6 +106,13 @@ bool _body_program(){
 						if(token == END){
 							_read_token();
 							if(token == IDF){
+								if(debug) printf("name proc : %s\n",nameProc);
+								if(strcmp(nameProc,idfvalue.value)!=0){
+									strcpy(errorTmp->msgError,"incompatible name of procedure");
+									errorTmp->line = linenumber.line;
+									errorTmp->next=NULL;
+									addOnTabError(errorTmp);
+								} 
 								_read_token();
 								if(token == PVIRG){
 									result = true;		
@@ -123,6 +134,9 @@ bool _program_specification(){
 	if(token == PROCEDURE){
 		_read_token();
 		if(token == IDF){
+			nameProc = (char*)malloc(sizeof(char)*strlen(idfvalue.value)+1);
+			strcpy(nameProc,idfvalue.value);
+			if(debug) printf("name proc : %s\n",nameProc);
 			result = true;		
 		}
 	}
@@ -136,24 +150,51 @@ bool _program_specification(){
 bool _basic_declaration(){
 	if (debug) printf("in_basic_declaration_statement \n");
 	bool result = false;
+	symbTmp.isCste = false;
+	symbTmp.adresse = getNbrSymb();
 	if(token == IDF){
+		strcpy(symbTmp.name,idfvalue.value);
+		if(isInTabSymb(symbTmp.name)){
+			strcpy(errorTmp->msgError,"variable redefined");
+			errorTmp->line = linenumber.line;
+			errorTmp->next=NULL;
+			addOnTabError(errorTmp);
+		}
 		_read_token();
 		if(token == TWOPOINTS){
 			_read_token();
 			if(token == CSTE){
 				_read_token();
+				symbTmp.isCste = true;
 			}
 			if(_type_declaration()){
+				symbTmp.type = token;
 				_read_token();
 				if(token == ASSIGNMENT){
 					_read_token();
 					if(_term()){
+						typetoken tokentmp = token;
 						_read_token();
-						if(token == PVIRG)
+						if(token == PVIRG){
 							result = true;
+							if(addOnTabSymb(symbTmp)){
+								switch(tokentmp){
+									case NUMERIC : addIntValueOfSymb(symbTmp,numericvalue.value); break;
+									case DECIMAL : addFloatValueOfSymb(symbTmp,decimalvalue.value); break;
+									case STRING_LITERAL : addStringValueOfSymb(symbTmp,stringvalue.value); break;
+								}
+							}			
+						}
 					}
 				}else if(token == PVIRG){
-					result = true;		
+					if(symbTmp.isCste){
+						strcpy(errorTmp->msgError,"constant attribute must be initialized");
+						errorTmp->line = linenumber.line;
+						errorTmp->next=NULL;
+						addOnTabError(errorTmp);
+					}
+					result = true;	
+					addOnTabSymb(symbTmp);	
 				}	
 			}	
 		}
@@ -465,7 +506,7 @@ bool _simple_expression() {
 	return result;
 }
 */
-//simple_expression:: _term {_simple_expression_aux}*
+//simple_expression:: _term _simple_expression_aux
 bool _simple_expression(){
 	if(debug) printf("in_simple_expression \n");
 	bool result=false;
@@ -474,7 +515,7 @@ bool _simple_expression(){
 	if(_term()){
 		
 		_read_token();
-		while( token != PVIRG){
+		while(token == PLUS_SIGN || token == HYPHEN_MINUS || token == AMPERSAND){
 			resultSimpleExp=_simple_expression_aux(); 
 			_read_token();
 			if(!resultSimpleExp) break;
@@ -487,7 +528,11 @@ bool _simple_expression(){
 	if(debug) printf("out_simple_expression \n");
 	return result;
 }
-//_simple_expression_aux :: ("+"|"-"|"&")_term | $
+/* 
+relation:: simple_expression (=, /=, >, >=, <, <=) simple_expression
+		   | simple_expression [not] "in" (range | subtype_mark)
+*/
+//_simple_expression_aux :: ("+"|"-"|"&")_term  _simple_expression_aux| $
 //follows simple_expression_aux = follows simple_express ={";"}
 bool _simple_expression_aux(){
 	if(debug) printf("in_simple_expression_aux\n");
@@ -497,7 +542,7 @@ bool _simple_expression_aux(){
 		if(_term()){
 			result = true;
 		}
-	}else if(token == PVIRG){
+	}else if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == LESS_THAN_EQ || token == GREATER_THAN || token == GREATER_THAN_EQ || token == IN){
 		result = true;
 		follow_token = true;
 	}
@@ -560,7 +605,6 @@ bool _assignement_statement() {
 		if(token == ASSIGNMENT) {
 			_read_token();
 			if(_simple_expression()) {
-				_read_token();
 				if(token == PVIRG) {
 					result = true;
 				}
@@ -663,5 +707,36 @@ bool _when_others_statement(){
 	if(debug) printf("out_when_others_statement\n");
 	return result;
 }
+
+
+void set_idf_attribute(char * idf){
+	if(debug) printf("in_set_idf_att\n");
+	idfvalue.value = (char*)malloc(sizeof(char)*strlen(idf)+1);
+	strcpy(idfvalue.value ,idf);
+	if(debug) printf("out_set_idf_att\n");
+}
+void set_line_attribute(int line){
+	if(debug) printf("in_set_line_att\n");
+	linenumber.line = line;
+	if(debug) printf("out_set_line_att\n");
+}
+void set_numeric_attribute(int numeric){
+	if(debug) printf("in_set_numeric_att\n");
+	numericvalue.value = numeric;
+	if(debug) printf("out_set_numeric_att\n");
+}
+void set_decimal_attribute(float decimal){
+	if(debug) printf("in_set_decimal_att\n");
+	decimalvalue.value = decimal;
+	if(debug) printf("out_set_decimal_att\n");
+}
+void set_string_attribute(char* string){
+	if(debug) printf("in_set_string_att\n");
+	stringvalue.value = (char*)malloc(sizeof(char)*strlen(string)+1);
+	strcpy(stringvalue.value ,string);
+	if(debug) printf("out_set_string_att\n");
+}
+
+
 
  
