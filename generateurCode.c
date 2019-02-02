@@ -4,12 +4,7 @@
 #include "analyseur_spark.h"
 #include "generateurCode.h"
 #define debug true
-#define tailleCode 200
 
-
-
-//tableau de code
-instruction tabCode[tailleCode];
 
 //IndexPile
 int ip=-1; //Pour rester pointer sur la derinere inst inserer
@@ -98,6 +93,10 @@ void displayAllPcode(){
 		} 
 		printf("\n");
 	}
+}
+
+int getCurrentIndexPile(){
+	return ip;
 }
 
 

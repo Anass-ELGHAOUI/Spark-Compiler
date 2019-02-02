@@ -1,3 +1,4 @@
+#define tailleCode 200
 
 
 typedef enum{
@@ -19,16 +20,15 @@ typedef struct{
 }instruction;
 
 
-
+//tableau de code
+instruction tabCode[tailleCode];
 
 //function de generation de code
 
-void genererMiInst(Pcode code);
-void genererInstInt(Pcode code,int num);
-void genererInstFloat(Pcode code,float decimal);
-void genererInstString(Pcode code,char* string);
-char* diplayOnCode(Pcode code);
-void displayAllPcode();
-
-
-
+extern void genererMiInst(Pcode code);
+extern void genererInstInt(Pcode code,int num);
+extern void genererInstFloat(Pcode code,float decimal);
+extern void genererInstString(Pcode code,char* string);
+extern char* diplayOnCode(Pcode code);
+extern void displayAllPcode();
+extern int getCurrentIndexPile();

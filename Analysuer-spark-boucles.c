@@ -63,6 +63,8 @@ bool _program(){
 	}
 	if(resulttmp){
 		if(_body_program()){
+			//generer
+			genererMiInst(HLT);
 			result = true;		
 		}
 	}
@@ -369,15 +371,15 @@ bool _if_statement(){
 		if(_condition()){
 			_read_token();
 			//generer 
-			genereMiInst(BZE);
-			int sauv=ip;
+			genererMiInst(BZE);
+			int sauv=getCurrentIndexPile();
 			if(token == THEN){
 				_read_token();
 				if(_suquence_of_statement()){
 					_read_token();
 					//generer
 					tabCode[sauv].type=INTEGER;
-					tabCode[sauv].paramI.intValue=ip+1;
+					tabCode[sauv].paramI.intValue=getCurrentIndexPile()+1;
 
 					while(token == ELSIF){resultTmp=_elsif_statement();_read_token();}
 					if(token == ELSE  && resultTmp ){resultTmp=_ifaux_statement(); _read_token();}
@@ -409,15 +411,15 @@ bool _elsif_statement() {
 		if(_condition()) {
 			_read_token();
 			//generer 
-			genereMiInst(BZE);
-			int sauv=ip;
+			genererMiInst(BZE);
+			int sauv=getCurrentIndexPile();
 			if(token == THEN) {
 				_read_token();
 				if(_suquence_of_statement()) {
 					_read_token();
 					//generer
 					tabCode[sauv].type=INTEGER;
-					tabCode[sauv].paramI.intValue=ip+1;
+					tabCode[sauv].paramI.intValue=getCurrentIndexPile()+1;
 					if(token == ELSE || token == ENDIF || token == ELSIF){
 						follow_token = true;
 						result = true;
@@ -553,7 +555,7 @@ bool _relation() {
 			if(_simple_expression()) {
 				result = true;
 				//generer
-				if(token == DIFF){genererMiInst(NE);}
+				if(tokenTmp == DIFF){genererMiInst(NE);}
 				else if(tokenTmp == EQ){genererMiInst(EQL);}
 				else if(tokenTmp == LESS_THAN){genererMiInst(LSS);}
 				else if(tokenTmp == GREATER_THAN){genererMiInst(GTR);}
@@ -608,6 +610,10 @@ bool _simple_expression(){
 		}
 		if(resultSimpleExp){
 			result=true;
+		}if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN){
+			result=true;
+			follow_token=true;
 		}
 		
 	}
@@ -697,7 +703,7 @@ bool _suquence_of_statement() {
 
 	bool resulttmp = true;
 	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != EXIT){
-		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement()){
+		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement() || _if_statement()){
 			resulttmp = true;
 		}
 		_read_token();
