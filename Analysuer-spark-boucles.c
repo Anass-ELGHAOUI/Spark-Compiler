@@ -272,6 +272,7 @@ _if_statement -> "if" _condition "then" _sequence_of_statements _elsif_statement
 _elsif_statements -> "elsif" _sequence_of_statements _elsif_statements | $
 _if_aux  ->  "else" _sequence_of_statements | "end if"
 */
+/*
 bool _if_statement() {
 	if (debug) printf("in_if_statement \n");
 	bool result = false;
@@ -295,7 +296,37 @@ bool _if_statement() {
 	if (debug) printf("out_if_statement \n");
 	return result;
 }
+*/
+//_if_statement -> "if" _condition "then" _sequence_of_statment [_elsif_statment]* [_else_statement] "end if" ";"
+bool _if_statement(){
+	printf("in_if_statement");
+	bool result = false;
+	bool resultTmp = true;
+	if(token == IF){
+		_read_token();
+		if(_condition()){
+			_read_token();
+			if(token == THEN){
+				_read_token();
+				if(_suquence_of_statement()){
+					_read_token();
+					while(token == ELSIF){resultTmp=_elsif_statement();_read_token();}
+					if(token == ELSE  && resultTmp ){resultTmp=_ifaux_statement(); _read_token();}
+					if(token == ENDIF && resultTmp ){
+						_read_token();
+						if(token == PVIRG){
+							result=true;
+						}
+					}
+				}
+			}
+		}
+	}
+	printf("out_if_statement");
+	return result;
+}
 
+//_elsif_statement :: ELSIF _condition then _statement
 /* 
 _if_statement -> "if" _condition "then" _sequence_of_statements _elsif_statements _if_aux "end if"
 _elsif_statements -> "elsif" _condition "then" _sequence_of_statements _elsif_statements | $
@@ -311,16 +342,14 @@ bool _elsif_statement() {
 			if(token == THEN) {
 				_read_token();
 				if(_suquence_of_statement()) {
-					result = true;
-				}	//if(_elseif_statements)
+					_read_token();
+					if(token == ELSE || token == ENDIF || token == ELSIF){
+						follow_token = true;
+						result = true;
+					}
+				}	
 			}
 		}
-	}else if(token == ELSE){
-		follow_token = true;
-		result = true;
-	}else if(token == ENDIF){
-		follow_token = true;
-		result = true;
 	}
 	if (debug) printf("out_elsif_statement \n");
 	return result;
@@ -338,11 +367,12 @@ bool _ifaux_statement() {
 	if(token == ELSE) {
 		_read_token();
 		if(_suquence_of_statement()) {
-			result = true;
+			_read_token();
+			if(token == ENDIF){
+				follow_token = true;
+				result =  true;
+			}
 		}
-	}else if(token == ENDIF){
-		follow_token = true;
-		result =  true;
 	}
 	if (debug) printf("out_ifaux_statement \n");
 	return result;
@@ -387,7 +417,8 @@ bool _condition(){
 	bool result=false;
 	if(_relation()){
 		_read_token();
-		if(_relation_aux){
+	
+		if(_condition_aux()){
 			result=true;
 		}
 	}
@@ -401,6 +432,7 @@ bool _condition_aux(){
 	if(debug) printf("in_condition_aux");
 	bool result=false;
 	if(token == AND || token == OR){
+		_read_token();
 		if(token == THEN){
 			_read_token();	
 		}
@@ -408,6 +440,7 @@ bool _condition_aux(){
 			result = true;
 		}
 	}else if(token == XOR){
+		_read_token();
 		if(_relation()){
 			result = true;
 		}
@@ -415,7 +448,7 @@ bool _condition_aux(){
 			result = true;
 			follow_token= true;
 	}
-	if(debug) printf("out_condition_aux");
+	if(debug) printf("out_condition_aux\n");
 	return result;
 }
 
@@ -474,13 +507,17 @@ bool _simple_expression(){
 	if(_term()){
 		
 		_read_token();
-		while( token != PVIRG){
+		while( token == PLUS_SIGN || token == HYPHEN_MINUS || token == AMPERSAND ){
 			resultSimpleExp=_simple_expression_aux(); 
 			_read_token();
 			if(!resultSimpleExp) break;
 		}
 		if(resultSimpleExp){
 			result=true;
+		}if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN){
+			result=true;
+			follow_token=true;
 		}
 		
 	}
@@ -488,7 +525,7 @@ bool _simple_expression(){
 	return result;
 }
 //_simple_expression_aux :: ("+"|"-"|"&")_term | $
-//follows simple_expression_aux = follows simple_express ={";"}
+//follows simple_expression_aux = follows simple_express ={";", "=", "/=" , >, >=, <, <=, not , "in"}
 bool _simple_expression_aux(){
 	if(debug) printf("in_simple_expression_aux\n");
 	bool result=false;
@@ -497,7 +534,8 @@ bool _simple_expression_aux(){
 		if(_term()){
 			result = true;
 		}
-	}else if(token == PVIRG){
+	}else if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR){
 		result = true;
 		follow_token = true;
 	}

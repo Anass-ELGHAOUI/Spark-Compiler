@@ -63,9 +63,10 @@ extern int yylex();
 
 void _read_token() ;
 bool _if_statement();
-bool _if_aux();
+bool _ifaux_statement();
 bool _elsif_statement();
 bool _condition();
+bool _condition_aux();
 bool _relation();
 bool _relation_aux();
 bool _operation_aux();
