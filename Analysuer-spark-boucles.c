@@ -630,7 +630,7 @@ bool _simple_expression(){
 		if(resultSimpleExp){
 			result=true;
 		}if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
-			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN){
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == THEN || token == LOOP){
 			result=true;
 			follow_token=true;
 		}
@@ -667,7 +667,7 @@ bool _simple_expression_aux(){
 		}
 
 	}else if(token == PVIRG || token == DIFF || token == EQ || token == LESS_THAN || token == GREATER_THAN || 
-			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == IN){
+			token == LESS_THAN_EQ || token == GREATER_THAN_EQ || token == AND || token == OR || token == XOR || token == IN || token == LOOP){
 
 		result = true;
 		follow_token = true;
@@ -744,14 +744,14 @@ bool _suquence_of_statement() {
 	bool result = false;
 
 	bool resulttmp = true;
-	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDCASE && token != ENDLOOP && token != WHEN  &&  token != WHENOTHERS && token != EXIT){
+	while(token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDCASE && token != ENDLOOP && token != WHEN  &&  token != WHENOTHERS){
 		if(_null_statement() || _assignement_statement() || _exit_statement() || _boucle_statements()||_case_statement()|| _get_statement() || _put_statement() || _if_statement()){	
 			resulttmp = true;
 		}
 		_read_token();
 		if(!resulttmp) break;
 	}
-	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != WHEN &&token != EXIT){result=true;}
+	if(resulttmp && token != END && token != ELSE && token != ELSIF && token != ENDIF && token != ENDLOOP && token != WHENOTHERS && token != WHEN){result=true;}
 	if(token == END || token == ELSE || token == ELSIF || token == ENDIF || token == ENDLOOP || token == WHENOTHERS || token == WHEN|| token == EXIT || token == ENDCASE ){
 		follow_token=true;
 		result = true;
@@ -817,7 +817,7 @@ bool _assignement_statement() {
 }
 
 /*
-exit_statement:: "exit" _exit_aux ";"
+exit_statement:: "exit" ["when" _condition] ";"
 */
 
 bool _exit_statement() {
@@ -825,7 +825,15 @@ bool _exit_statement() {
 	bool result = false;
 	if(token == EXIT) {
 		_read_token();
-		if(token == PVIRG) {
+		if(token == WHEN){
+			_read_token();
+			if(_condition()){
+				_read_token();
+				if(token == PVIRG) {
+					result = true;
+				}
+			}
+		}else if(token == PVIRG) {
 			result = true;
 		}
 	}
@@ -949,6 +957,13 @@ bool _get_statement(){
 			if(token == IDF){
 				//generer
 				if(isInTabSymb(idfvalue.value)){
+					tabSymb symbtmp = getSymbByName(idfvalue.value);
+					if(symbtmp.isCste){
+						strcpy(errorTmp->msgError,"constant attribute can not be variable");
+						errorTmp->line = linenumber.line;
+						errorTmp->next=NULL;
+						addOnTabError(errorTmp);
+					}
 					genererInstInt(LDA,adresseInTabSymb(idfvalue.value));
 					genererMiInst(INN);
 					result = true ;
