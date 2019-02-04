@@ -17,7 +17,6 @@ typedef enum {
 	ANDOP,
 	XOROP,
 	ANDNOP,
-	HLTOP,
 	OLEQOP,
 	GEQOP,
 	LSSOP,
@@ -38,6 +37,7 @@ typedef enum {
 	INTOP,
 	LDAOP,
 	LDIOP,
+	HLTOP,
 	NUMERICOP,
 	DECIMALOP,
 	STRINGOP

@@ -27,9 +27,9 @@ type_operation : NUMERICOP | DECIMALOP | STRINGOP
 int main() {
 	_read_token();
 	if (_pseudocode()) {
-		puts("\n---Valide_Pseudo_Code --- \n");
+		printf("\n---Valide_Pseudo_Code --- \n");
 	} else {
-		puts("\n---Invalide_Pseudo_Code  --- \n");
+		printf("\n---Invalide_Pseudo_Code  --- \n");
 	}
 	
 	return 0;
@@ -43,20 +43,28 @@ void _read_token(){
 bool _pseudocode(){
 	bool result = false;
 	bool resulttmp = true;
-	while(token != HLTOP){
-		resulttmp = _pseudo_item();
+	if(token == NUMERICOP){
 		_read_token();
-		if(!resulttmp) break;
+		while(token != HLTOP){
+			resulttmp = _pseudo_item();
+			_read_token();
+			if(token != NUMERICOP) resulttmp = false;
+			_read_token();
+			if(!resulttmp) break;
+		}
 	}
 	if(resulttmp)
 		result = true;
+
 	return result;
 }
 
 bool _pseudo_item(){
 	bool result = false;
-	if(_data_item() || _data_attribute_item())
-		result = true;
+	result = _data_item();
+	if(!result)
+		result = _data_attribute_item();
+	
 	return result;
 }
 
