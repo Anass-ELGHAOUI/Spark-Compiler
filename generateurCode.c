@@ -83,16 +83,21 @@ char* diplayOnCode(Pcode code){
 
 void displayAllPcode(){
 	int i;
+	FILE* fp;
+	fp = fopen("pseudoCode.txt","w");
 	for(i=0;i<ip+1;i++){
 		printf("%d\t%s",i,diplayOnCode(tabCode[i].inst));
+		fprintf(fp,"%d\t%s",i,diplayOnCode(tabCode[i].inst));
 
 		switch(tabCode[i].type){
-			case INTEGER : printf("\t%d",tabCode[i].paramI.intValue); break;	
-			case FLOAT : printf("\t%f",tabCode[i].paramI.floatValue); break;
-			case STRING : printf("\t%s",tabCode[i].paramI.stringValue); break;	
+			case INTEGER : printf("\t%d",tabCode[i].paramI.intValue); fprintf(fp,"\t%d",tabCode[i].paramI.intValue); break;	
+			case FLOAT : printf("\t%f",tabCode[i].paramI.floatValue); fprintf(fp,"\t%f",tabCode[i].paramI.floatValue); break;
+			case STRING : printf("\t%s",tabCode[i].paramI.stringValue); fprintf(fp,"\t%s",tabCode[i].paramI.stringValue);break;	
 		} 
 		printf("\n");
+		fprintf(fp,"\n");
 	}
+	fclose(fp);
 }
 
 int getCurrentIndexPile(){
