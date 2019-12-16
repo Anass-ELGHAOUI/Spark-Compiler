@@ -1,5 +1,17 @@
 # Spark-Compiler
 
+<h4>Authors:</h4> 
+<ul>
+	<li>
+		<a href="https://www.linkedin.com/in/anas-el-ghaoui/">EL GHAOUI ANASS</a>
+	</li>
+	<li>
+		<a href="https://www.linkedin.com/in/hamza-el-haddaoui-687a3314b/">EL HADDAOUI HAMZA</a>
+	</li>
+	
+</ul>
+<br>
+
 <h4>Grammar</h4>
 <p>
 	
