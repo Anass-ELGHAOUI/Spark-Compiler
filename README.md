@@ -32,12 +32,12 @@ _when_statement -> "when" _condition ";" <br>
 </p>
 <h4>Commands for executing the project</h4>
 <p> 
-```
-  flex -l Scanner.l <br>
-  gcc -c lex.yy.c <br>
-  repete gcc -c for all c files <br>
-  gcc -o test lex.yy.o (all .o files) -lfl<br>
-  ./test <br>
 	
+```
+  flex -l Scanner.l
+  gcc -c lex.yy.c
+  repete gcc -c for all c files
+  gcc -o test lex.yy.o (all .o files) -lfl
+  ./test
 ```
 </p>
